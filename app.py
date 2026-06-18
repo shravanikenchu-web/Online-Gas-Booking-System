@@ -31,12 +31,12 @@ def create_tables():
 
 create_tables()
 
-
+# Home
 @app.route('/')
 def home():
     return render_template('01_index.html')
 
-
+# Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
 
@@ -61,7 +61,7 @@ def register():
 
     return render_template('02_register.html')
 
-
+# Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
@@ -89,12 +89,12 @@ def login():
 
     return render_template('03_login.html')
 
-
+# Dashboard
 @app.route('/dashboard')
 def dashboard():
     return render_template('04_dashboard.html')
 
-
+# Booking (FIXED)
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
 
@@ -111,36 +111,51 @@ def booking():
             (cylinder_type, amount, 'Booked')
         )
 
+        booking_id = cursor.lastrowid   # IMPORTANT
         conn.commit()
         conn.close()
 
-        return redirect('/payment')
+        return redirect(f'/payment/{booking_id}')
 
     return render_template('05_booking.html')
 
+# Payment (FIXED PROFESSIONAL FLOW)
+@app.route('/payment/<int:booking_id>')
+def payment(booking_id):
 
+    conn = sqlite3.connect('gas_booking.db')
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "UPDATE bookings SET status=? WHERE id=?",
+        ("Paid", booking_id)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return render_template('06_payment.html')
+
+# History
 @app.route('/history')
 def history():
 
     conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM bookings")
+    cursor.execute("SELECT id, cylinder_type, amount, status FROM bookings")
     bookings = cursor.fetchall()
 
     conn.close()
 
-    return render_template(
-        '07_history.html',
-        bookings=bookings
-    )
+    return render_template('07_history.html', bookings=bookings)
 
-
+# Logout
 @app.route('/logout')
 def logout():
     return redirect('/')
 
-
+# Admin login
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
 
@@ -156,12 +171,12 @@ def admin():
 
     return render_template('08_admin_login.html')
 
-
+# Admin dashboard
 @app.route('/admin_dashboard')
 def admin_dashboard():
     return render_template('09_admin_dashboard.html')
 
-
+# View bookings
 @app.route('/view_bookings')
 def view_bookings():
 
@@ -173,12 +188,9 @@ def view_bookings():
 
     conn.close()
 
-    return render_template(
-        '10_view_bookings.html',
-        bookings=bookings
-    )
+    return render_template('10_view_bookings.html', bookings=bookings)
 
-
+# View users
 @app.route('/view_users')
 def view_users():
 
@@ -190,13 +202,7 @@ def view_users():
 
     conn.close()
 
-    return render_template(
-        '11_view_users.html',
-        users=users
-    )
-@app.route('/payment')
-def payment():
-    return render_template('06_payment.html')
+    return render_template('11_view_users.html', users=users)
 
 if __name__ == '__main__':
     app.run(debug=True)
