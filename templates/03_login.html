@@ -1,35 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-
-<title>Login</title>
-
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-<h1>User Login</h1>
+<h2>Login Page</h2>
 
-<form method="POST">
+<form method="POST" action="/login">
 
-<input type="email" name="email" placeholder="Enter Email" required>
+    <label>Email:</label>
+    <input type="email" name="email" required>
 
-<br><br>
+    <br><br>
 
-<input type="password" name="password" placeholder="Enter Password" required>
+    <label>Password:</label>
+    <input type="password" name="password" required>
 
-<br><br>
+    <br><br>
 
-<button type="submit">Login</button>
+    <button type="submit">Login</button>
 
 </form>
 
 <br>
 
+<!-- Proper placement -->
+<p>Don't have an account?</p>
 <a href="/register">
-<button>Create Account</button>
+    <button type="button">Create Account</button>
 </a>
 
 </body>
