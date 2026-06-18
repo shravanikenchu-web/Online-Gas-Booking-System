@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session, flash
 import sqlite3
 
 app = Flask(__name__)
+app.secret_key = "gas_booking_secret_key"
 
 # Create tables automatically
 def create_tables():
@@ -57,11 +58,12 @@ def register():
         conn.commit()
         conn.close()
 
+        flash("Registration Successful! Please login.")
         return redirect('/login')
 
     return render_template('02_register.html')
 
-# Login
+# Login (SESSION ADDED)
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
@@ -79,24 +81,31 @@ def login():
         )
 
         user = cursor.fetchone()
-
         conn.close()
 
         if user:
+            session['user'] = email
+            flash("Login Successful!")
             return redirect('/dashboard')
         else:
-            return "Invalid Email or Password!"
+            flash("Invalid credentials!")
+            return redirect('/login')
 
     return render_template('03_login.html')
 
-# Dashboard
+# Dashboard (PROTECTED)
 @app.route('/dashboard')
 def dashboard():
+    if 'user' not in session:
+        return redirect('/login')
     return render_template('04_dashboard.html')
 
-# Booking (FIXED)
+# Booking (PROTECTED)
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
+
+    if 'user' not in session:
+        return redirect('/login')
 
     if request.method == 'POST':
 
@@ -111,15 +120,16 @@ def booking():
             (cylinder_type, amount, 'Booked')
         )
 
-        booking_id = cursor.lastrowid   # IMPORTANT
+        booking_id = cursor.lastrowid
         conn.commit()
         conn.close()
 
+        flash("Booking Successful!")
         return redirect(f'/payment/{booking_id}')
 
     return render_template('05_booking.html')
 
-# Payment (FIXED PROFESSIONAL FLOW)
+# Payment (PROFESSIONAL)
 @app.route('/payment/<int:booking_id>')
 def payment(booking_id):
 
@@ -136,9 +146,12 @@ def payment(booking_id):
 
     return render_template('06_payment.html')
 
-# History
+# History (PROTECTED)
 @app.route('/history')
 def history():
+
+    if 'user' not in session:
+        return redirect('/login')
 
     conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
@@ -150,9 +163,11 @@ def history():
 
     return render_template('07_history.html', bookings=bookings)
 
-# Logout
+# Logout (SESSION CLEAR)
 @app.route('/logout')
 def logout():
+    session.pop('user', None)
+    flash("Logged out successfully!")
     return redirect('/')
 
 # Admin login
@@ -205,4 +220,4 @@ def view_users():
     return render_template('11_view_users.html', users=users)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True)    
