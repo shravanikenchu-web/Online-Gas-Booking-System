@@ -194,7 +194,9 @@ def view_users():
         '11_view_users.html',
         users=users
     )
-
+@app.route('/payment')
+def payment():
+    return render_template('06_payment.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
