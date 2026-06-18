@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Bookings</title>
+</head>
+<body>
+
+<h2>All Bookings</h2>
+
+<table border="1">
+
+<tr>
+    <th>ID</th>
+    <th>Cylinder Type</th>
+    <th>Amount</th>
+    <th>Status</th>
+</tr>
+
+{% for row in bookings %}
+<tr>
+    <td>{{ row[0] }}</td>
+    <td>{{ row[1] }}</td>
+    <td>{{ row[2] }}</td>
+    <td>{{ row[3] }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+<br>
+
+<a href="/admin_dashboard">Back to Admin Dashboard</a>
+
+</body>
+</html>
