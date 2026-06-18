@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Book Cylinder</title>
+<title>Book Cylinder</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 </head>
 <body>
 
 <h2>Gas Cylinder Booking</h2>
 
-<form method="POST">
+<form action="/payment">
 
-    <label>Cylinder Type:</label>
-    <select name="cylinder_type">
-        <option>Domestic</option>
-        <option>Commercial</option>
-    </select>
+<label>Cylinder Type:</label>
 
-    <br><br>
+<select name="cylinder_type">
+<option>Domestic</option>
+<option>Commercial</option>
+</select>
 
-    <label>Amount:</label>
-    <input type="text" name="amount" value="1200">
+<br><br>
 
-    <br><br>
+<label>Amount:</label>
 
-    <button type="submit">Book Now</button>
+<input type="text" value="1200">
+
+<br><br>
+
+<button type="submit">Proceed To Payment</button>
 
 </form>
 
