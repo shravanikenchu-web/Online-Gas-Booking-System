@@ -1,21 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard</title>
+
+<title>Dashboard</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 </head>
+
 <body>
 
-<h1>Dashboard Opened Successfully</h1>
+<h1>Customer Dashboard</h1>
 
-<a href="/booking">Book Cylinder</a>
+<p>Welcome to Online Gas Booking System</p>
+
+<a href="/booking">
+<button>Book Cylinder</button>
+</a>
 
 <br><br>
 
-<a href="/history">Booking History</a>
+<a href="/history">
+<button>Booking History</button>
+</a>
 
 <br><br>
 
-<a href="/logout">Logout</a>
+<a href="/logout">
+<button>Logout</button>
+</a>
+
+<br><br>
+
+<a href="/admin">
+<button>Admin Login</button>
+</a>
 
 </body>
 </html>
