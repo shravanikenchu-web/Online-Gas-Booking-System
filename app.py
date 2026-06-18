@@ -114,7 +114,7 @@ def booking():
         conn.commit()
         conn.close()
 
-        return "Booking Successful!"
+        return redirect('/payment')
 
     return render_template('05_booking.html')
 
