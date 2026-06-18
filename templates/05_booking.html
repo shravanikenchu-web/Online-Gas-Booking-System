@@ -2,15 +2,13 @@
 <html>
 <head>
 <title>Book Cylinder</title>
-
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 </head>
 <body>
 
 <h2>Gas Cylinder Booking</h2>
 
-<form action="/payment">
+<form method="POST">
 
 <label>Cylinder Type:</label>
 
@@ -23,7 +21,7 @@
 
 <label>Amount:</label>
 
-<input type="text" value="1200">
+<input type="text" name="amount" value="1200">
 
 <br><br>
 
