@@ -3,12 +3,41 @@ import sqlite3
 
 app = Flask(__name__)
 
+# Create tables automatically
+def create_tables():
+    conn = sqlite3.connect('gas_booking.db')
+    cursor = conn.cursor()
+
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS users(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        email TEXT,
+        password TEXT
+    )
+    ''')
+
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS bookings(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cylinder_type TEXT,
+        amount TEXT,
+        status TEXT
+    )
+    ''')
+
+    conn.commit()
+    conn.close()
+
+create_tables()
+
+
 @app.route('/')
 def home():
     return render_template('01_index.html')
 
 
-@app.route('/register', methods=['GET','POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
 
     if request.method == 'POST':
@@ -21,8 +50,8 @@ def register():
         cursor = conn.cursor()
 
         cursor.execute(
-        "INSERT INTO users(name,email,password) VALUES(?,?,?)",
-        (name,email,password)
+            "INSERT INTO users(name,email,password) VALUES(?,?,?)",
+            (name, email, password)
         )
 
         conn.commit()
@@ -33,7 +62,7 @@ def register():
     return render_template('02_register.html')
 
 
-@app.route('/login', methods=['GET','POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
 
     if request.method == 'POST':
@@ -45,8 +74,8 @@ def login():
         cursor = conn.cursor()
 
         cursor.execute(
-        "SELECT * FROM users WHERE email=? AND password=?",
-        (email,password)
+            "SELECT * FROM users WHERE email=? AND password=?",
+            (email, password)
         )
 
         user = cursor.fetchone()
@@ -59,10 +88,14 @@ def login():
             return "Invalid Email or Password!"
 
     return render_template('03_login.html')
+
+
 @app.route('/dashboard')
 def dashboard():
     return render_template('04_dashboard.html')
-@app.route('/booking', methods=['GET','POST'])
+
+
+@app.route('/booking', methods=['GET', 'POST'])
 def booking():
 
     if request.method == 'POST':
@@ -84,6 +117,8 @@ def booking():
         return "Booking Successful!"
 
     return render_template('05_booking.html')
+
+
 @app.route('/history')
 def history():
 
@@ -100,9 +135,12 @@ def history():
         bookings=bookings
     )
 
+
 @app.route('/logout')
 def logout():
     return redirect('/')
+
+
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
 
@@ -140,6 +178,7 @@ def view_bookings():
         bookings=bookings
     )
 
+
 @app.route('/view_users')
 def view_users():
 
@@ -155,5 +194,7 @@ def view_users():
         '11_view_users.html',
         users=users
     )
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+    app.run(debug=True)
