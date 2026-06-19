@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, session, flash
-import sqlite3
+import psycopg2
 import os
 
 app = Flask(__name__)
