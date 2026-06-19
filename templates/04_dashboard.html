@@ -1,40 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
+<div class="container text-center mt-5">
 
-<title>Dashboard</title>
+<h2>Dashboard</h2>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<a href="/booking" class="btn btn-primary m-2">Book Gas</a>
+<a href="/history" class="btn btn-success m-2">History</a>
+<a href="/logout" class="btn btn-danger m-2">Logout</a>
 
-</head>
-
-<body>
-
-<h1>Customer Dashboard</h1>
-
-<p>Welcome to Online Gas Booking System</p>
-
-<a href="/booking">
-<button>Book Cylinder</button>
-</a>
-
-<br><br>
-
-<a href="/history">
-<button>Booking History</button>
-</a>
-
-<br><br>
-
-<a href="/logout">
-<button>Logout</button>
-</a>
-
-<br><br>
-
-<a href="/admin">
-<button>Admin Login</button>
-</a>
-
-</body>
-</html>
+</div>
