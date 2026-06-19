@@ -4,16 +4,13 @@ import psycopg2
 app = Flask(__name__)
 app.secret_key = "gas_booking_secret_key"
 
-# 🔥 PostgreSQL (Render)
 DATABASE_URL = "postgresql://online_gas_booking_system_user:SovsbFtIkVSI1Iv0wpxgcE1ZziROpHYd@dpg-d8qi2da8qa3s73ca415g-a/online_gas_booking_system"
 
 
-# DB connection
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, sslmode='require')
 
 
-# Create tables
 def create_tables():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -43,16 +40,13 @@ def create_tables():
 create_tables()
 
 
-# Home
 @app.route('/')
 def home():
     return render_template('01_index.html')
 
 
-# Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
@@ -63,7 +57,7 @@ def register():
 
         cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
         if cursor.fetchone():
-            flash("User already exists! Please login.")
+            flash("User already exists!")
             return redirect('/login')
 
         cursor.execute(
@@ -74,16 +68,13 @@ def register():
         conn.commit()
         conn.close()
 
-        flash("Registration Successful!")
         return redirect('/login')
 
     return render_template('02_register.html')
 
 
-# Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -109,7 +100,6 @@ def login():
     return render_template('03_login.html')
 
 
-# Dashboard
 @app.route('/dashboard')
 def dashboard():
     if 'user' not in session:
@@ -117,15 +107,12 @@ def dashboard():
     return render_template('04_dashboard.html')
 
 
-# Booking (FIXED PAYMENT FLOW)
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
-
     if 'user' not in session:
         return redirect('/login')
 
     if request.method == 'POST':
-
         cylinder_type = request.form['cylinder_type']
         amount = request.form['amount']
         user_email = session['user']
@@ -133,14 +120,10 @@ def booking():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        cursor.execute(
-            """
+        cursor.execute("""
             INSERT INTO bookings(user_email, cylinder_type, amount, status)
-            VALUES(%s,%s,%s,%s)
-            RETURNING id
-            """,
-            (user_email, cylinder_type, amount, "Booked")
-        )
+            VALUES(%s,%s,%s,%s) RETURNING id
+        """, (user_email, cylinder_type, amount, "Booked"))
 
         booking_id = cursor.fetchone()[0]
 
@@ -152,10 +135,8 @@ def booking():
     return render_template('05_booking.html')
 
 
-# Payment
 @app.route('/payment/<int:booking_id>')
 def payment(booking_id):
-
     if 'user' not in session:
         return redirect('/login')
 
@@ -173,10 +154,8 @@ def payment(booking_id):
     return render_template('06_payment.html')
 
 
-# History
 @app.route('/history')
 def history():
-
     if 'user' not in session:
         return redirect('/login')
 
@@ -194,39 +173,29 @@ def history():
     return render_template('07_history.html', bookings=bookings)
 
 
-# Logout
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
 
 
-# Admin login
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
-
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
-        if username == "admin" and password == "admin123":
+        if request.form['username'] == "admin" and request.form['password'] == "admin123":
             return redirect('/admin_dashboard')
-
         return "Invalid Admin Credentials"
 
     return render_template('08_admin_login.html')
 
 
-# Admin dashboard
 @app.route('/admin_dashboard')
 def admin_dashboard():
     return render_template('09_admin_dashboard.html')
 
 
-# View bookings
 @app.route('/view_bookings')
 def view_bookings():
-
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -238,10 +207,8 @@ def view_bookings():
     return render_template('10_view_bookings.html', bookings=bookings)
 
 
-# View users
 @app.route('/view_users')
 def view_users():
-
     conn = get_db_connection()
     cursor = conn.cursor()
 
