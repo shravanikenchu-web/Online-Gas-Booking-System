@@ -1,232 +1,145 @@
 from flask import Flask, render_template, request, redirect, session, flash
-import psycopg2
+import sqlite3
+import os
 
 app = Flask(__name__)
 app.secret_key = "gas_booking_secret_key"
 
-
-import os
-
-DATABASE_URL = os.environ.get("DATABASE_URL")
-def get_db_connection():
-    return psycopg2.connect(DATABASE_URL, sslmode='require')
+# ✅ FIXED DATABASE PATH (IMPORTANT)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "gas_booking.db")
 
 
+# Create tables automatically
 def create_tables():
-    conn = get_db_connection()
+    conn = sqlite3.connect('gas_booking.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    cursor.execute("""
+    # USERS TABLE (FIXED: email UNIQUE + proper structure)
+    # USERS TABLE
+    cursor.execute('''
     CREATE TABLE IF NOT EXISTS users(
-        id SERIAL PRIMARY KEY,
-        name TEXT,
-        email TEXT UNIQUE,
-        password TEXT
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+@@ -19,7 +25,7 @@ def create_tables():
     )
-    """)
+    ''')
 
-    cursor.execute("""
+    # BOOKINGS TABLE (FIXED: linked to user_id)
+    # BOOKINGS TABLE
+    cursor.execute('''
     CREATE TABLE IF NOT EXISTS bookings(
-        id SERIAL PRIMARY KEY,
-        user_email TEXT,
-        cylinder_type TEXT,
-        amount TEXT,
-        status TEXT
-    )
-    """)
-
-    conn.commit()
-    conn.close()
-
-create_tables()
-
-# ---------------- HOME ----------------
-@app.route('/')
-def home():
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+@@ -42,7 +48,7 @@ def home():
     return render_template('01_index.html')
 
-# ---------------- REGISTER ----------------
+
+# Register (FIXED: duplicate prevention)
+# Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        name = request.form['name']
+
+@@ -52,10 +58,10 @@ def register():
         email = request.form['email']
         password = request.form['password']
 
-        conn = get_db_connection()
+        conn = sqlite3.connect('gas_booking.db')
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
-        if cursor.fetchone():
-            flash("User already exists!")
-            return redirect('/login')
+        # CHECK DUPLICATE USER
+        # check duplicate
+        cursor.execute("SELECT * FROM users WHERE email=?", (email,))
+        existing = cursor.fetchone()
 
-        cursor.execute(
-            "INSERT INTO users(name,email,password) VALUES(%s,%s,%s)",
-            (name, email, password)
-        )
-
-        conn.commit()
-        conn.close()
-
-        flash("Registration Successful!")
-        return redirect('/login')
-
-    return render_template('02_register.html')
-
-# ---------------- LOGIN ----------------
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
+@@ -86,7 +92,7 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        conn = get_db_connection()
+        conn = sqlite3.connect('gas_booking.db')
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT * FROM users WHERE email=%s AND password=%s",
-            (email, password)
-        )
-
-        user = cursor.fetchone()
-        conn.close()
-
-        if user:
-            session['user'] = email
-            return redirect('/dashboard')
-
-        flash("Invalid credentials!")
-        return redirect('/login')
-
-    return render_template('03_login.html')
-
-# ---------------- DASHBOARD ----------------
-@app.route('/dashboard')
-def dashboard():
-    if 'user' not in session:
-        return redirect('/login')
+@@ -116,7 +122,7 @@ def dashboard():
     return render_template('04_dashboard.html')
 
-# ---------------- BOOKING ----------------
+
+# Booking (FIXED: store user_email)
+# Booking
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
-    if 'user' not in session:
-        return redirect('/login')
 
-    if request.method == 'POST':
-        cylinder_type = request.form['cylinder_type']
+@@ -129,7 +135,7 @@ def booking():
         amount = request.form['amount']
         user_email = session['user']
 
-        conn = get_db_connection()
+        conn = sqlite3.connect('gas_booking.db')
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
-        cursor.execute("""
-            INSERT INTO bookings(user_email, cylinder_type, amount, status)
-            VALUES(%s,%s,%s,%s)
-            RETURNING id
-        """, (user_email, cylinder_type, amount, "Booked"))
-
-        booking_id = cursor.fetchone()[0]
-
-        conn.commit()
-        conn.close()
-
-        return redirect(f'/payment/{booking_id}')
-
-    return render_template('05_booking.html')
-
-# ---------------- PAYMENT ----------------
-@app.route('/payment/<int:booking_id>')
-def payment(booking_id):
+        cursor.execute(
+@@ -155,7 +161,7 @@ def payment(booking_id):
     if 'user' not in session:
         return redirect('/login')
 
-    conn = get_db_connection()
+    conn = sqlite3.connect('gas_booking.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute(
-        "UPDATE bookings SET status=%s WHERE id=%s",
-        ("Paid", booking_id)
-    )
-
-    conn.commit()
-    conn.close()
-
+@@ -169,14 +175,14 @@ def payment(booking_id):
     return render_template('06_payment.html')
 
-# ---------------- HISTORY ----------------
+
+# HISTORY (FIXED: show only logged-in user data)
+# History (FIXED)
 @app.route('/history')
 def history():
+
     if 'user' not in session:
         return redirect('/login')
 
-    conn = get_db_connection()
+    conn = sqlite3.connect('gas_booking.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT id, cylinder_type, amount, status FROM bookings WHERE user_email=%s",
-        (session['user'],)
-    )
-
-    bookings = cursor.fetchall()
-    conn.close()
-
-    return render_template('07_history.html', bookings=bookings)
-
-# ---------------- LOGOUT ----------------
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect('/')
-
-# ---------------- ADMIN LOGIN ----------------
-@app.route('/admin', methods=['GET', 'POST'])
-def admin():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
-        if username == "admin" and password == "admin123":
-            return redirect('/admin_dashboard')
-
-        flash("Invalid Admin Credentials")
-        return redirect('/admin')
-
-    return render_template('08_admin_login.html')
-
-# ---------------- ADMIN DASHBOARD ----------------
-@app.route('/admin_dashboard')
-def admin_dashboard():
+@@ -221,11 +227,11 @@ def admin_dashboard():
     return render_template('09_admin_dashboard.html')
 
-# ---------------- VIEW BOOKINGS ----------------
+
+# View bookings (ADMIN)
+# View bookings
 @app.route('/view_bookings')
 def view_bookings():
-    conn = get_db_connection()
+
+    conn = sqlite3.connect('gas_booking.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM bookings ORDER BY id DESC")
-    bookings = cursor.fetchall()
-
-    conn.close()
-
+    cursor.execute("SELECT * FROM bookings")
+@@ -236,11 +242,11 @@ def view_bookings():
     return render_template('10_view_bookings.html', bookings=bookings)
 
-# ---------------- VIEW USERS ----------------
+
+# View users (ADMIN)
+# View users
 @app.route('/view_users')
 def view_users():
-    conn = get_db_connection()
+
+    conn = sqlite3.connect('gas_booking.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM users ORDER BY id DESC")
-    users = cursor.fetchall()
+    cursor.execute("SELECT * FROM users")
+    
+users = cursor.fetchall()
 
     conn.close()
 
     return render_template('11_view_users.html', users=users)
 
-# ---------------- RUN ----------------
+
 if __name__ == '__main__':
     app.run(debug=True)
