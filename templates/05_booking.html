@@ -1,22 +1,40 @@
-<div class="container mt-5">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Cylinder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 
-<div class="card p-4 shadow">
+<body>
 
-<h3>Book Cylinder</h3>
+<h1>Gas Cylinder Booking</h1>
 
-<form method="POST">
+<form method="POST" action="/booking">
 
-<select name="cylinder_type" class="form-control mb-2">
-<option>Domestic</option>
-<option>Commercial</option>
-</select>
+    <label>Cylinder Type:</label>
+    <br>
+    <select name="cylinder_type" required>
+        <option value="Domestic">Domestic</option>
+        <option value="Commercial">Commercial</option>
+    </select>
 
-<input name="amount" class="form-control mb-2" value="1200">
+    <br><br>
 
-<button class="btn btn-primary w-100">Book Now</button>
+    <label>Amount:</label>
+    <br>
+    <input type="text" name="amount" value="1200" required>
+
+    <br><br>
+
+    <button type="submit">Book Now</button>
 
 </form>
 
-</div>
+<br>
 
-</div>
+<a href="/dashboard">
+    <button>Back to Dashboard</button>
+</a>
+
+</body>
+</html>
