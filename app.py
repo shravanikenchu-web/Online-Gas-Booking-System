@@ -5,6 +5,8 @@ import os
 app = Flask(__name__)
 app.secret_key = "gas_booking_secret_key"
 
+DATABASE_URL = "postgresql://online_gas_booking_system_user:SovsbFtIkVSI1Iv0wpxgcE1ZziROpHYd@dpg-d8qi2da8qa3s73ca415g-a/online_gas_booking_system"
+
 # ✅ FIXED DATABASE PATH (IMPORTANT)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "gas_booking.db")
