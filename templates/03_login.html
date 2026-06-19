@@ -1,29 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+<div class="container mt-5">
 
-<body>
+<div class="row justify-content-center">
+<div class="col-md-4">
 
-<h2>Login Page</h2>
+<div class="card p-3 shadow">
 
-<form method="POST" action="/login">
+<h3 class="text-center">Login</h3>
 
-    <label>Email:</label>
-    <input type="email" name="email" required>
+<form method="POST">
 
-    <br><br>
+<input class="form-control mb-2" name="email" placeholder="Email">
+<input class="form-control mb-2" name="password" placeholder="Password">
 
-    <label>Password:</label>
-    <input type="password" name="password" required>
-
-    <br><br>
-
-    <button type="submit">Login</button>
+<button class="btn btn-primary w-100">Login</button>
 
 </form>
 
-</body>
-</html>
+</div>
+</div>
+</div>
+
+</div>
