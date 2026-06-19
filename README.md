@@ -1,18 +1,36 @@
-# Online Gas Booking System
+# 🏠 Online Gas Booking System
 
-Technologies Used:
+A full-stack web application that allows users to book LPG gas cylinders online and track booking history. It also includes an admin panel to manage users and bookings.
+
+---
+
+## 🚀 Technologies Used
+
 - Python
 - Flask
-- SQLite
-- HTML
-- CSS
-- Bootstrap
+- SQLite / PostgreSQL (depending on deployment)
+- HTML5
+- CSS3
+- Bootstrap (optional UI enhancement)
+- Gunicorn (for deployment)
 
-Features:
+---
+
+## 🎯 Features
+
+### 👤 User Module
 - User Registration
-- User Login
-- Gas Cylinder Booking
-- Booking History
+- User Login & Logout
+- Book Gas Cylinder
+- View Booking History
+- Payment Confirmation Page
+
+### 🛠️ Admin Module
+- Admin Login
 - Admin Dashboard
-- View Users
-- View Bookings
+- View All Users
+- View All Bookings
+
+---
+
+## 🏗️ Project Structure
