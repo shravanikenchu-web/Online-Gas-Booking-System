@@ -9,6 +9,7 @@ DATABASE_URL = "postgresql://online_gas_booking_system_user:SovsbFtIkVSI1Iv0wpxg
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, sslmode='require')
 
+
 def create_tables():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -37,10 +38,12 @@ def create_tables():
 
 create_tables()
 
+# ---------------- HOME ----------------
 @app.route('/')
 def home():
-    return render_template('01_index.html')
+    return render_template('index.html')
 
+# ---------------- REGISTER ----------------
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -67,8 +70,9 @@ def register():
         flash("Registration Successful!")
         return redirect('/login')
 
-    return render_template('02_register.html')
+    return render_template('register.html')
 
+# ---------------- LOGIN ----------------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -93,14 +97,16 @@ def login():
         flash("Invalid credentials!")
         return redirect('/login')
 
-    return render_template('03_login.html')
+    return render_template('login.html')
 
+# ---------------- DASHBOARD ----------------
 @app.route('/dashboard')
 def dashboard():
     if 'user' not in session:
         return redirect('/login')
-    return render_template('04_dashboard.html')
+    return render_template('dashboard.html')
 
+# ---------------- BOOKING ----------------
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
     if 'user' not in session:
@@ -127,8 +133,9 @@ def booking():
 
         return redirect(f'/payment/{booking_id}')
 
-    return render_template('05_booking.html')
+    return render_template('booking.html')
 
+# ---------------- PAYMENT ----------------
 @app.route('/payment/<int:booking_id>')
 def payment(booking_id):
     if 'user' not in session:
@@ -145,8 +152,9 @@ def payment(booking_id):
     conn.commit()
     conn.close()
 
-    return render_template('06_payment.html')
+    return render_template('payment.html')
 
+# ---------------- HISTORY ----------------
 @app.route('/history')
 def history():
     if 'user' not in session:
@@ -163,13 +171,15 @@ def history():
     bookings = cursor.fetchall()
     conn.close()
 
-    return render_template('07_history.html', bookings=bookings)
+    return render_template('history.html', bookings=bookings)
 
+# ---------------- LOGOUT ----------------
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
 
+# ---------------- ADMIN LOGIN ----------------
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     if request.method == 'POST':
@@ -182,12 +192,14 @@ def admin():
         flash("Invalid Admin Credentials")
         return redirect('/admin')
 
-    return render_template('08_admin_login.html')
+    return render_template('admin_login.html')
 
+# ---------------- ADMIN DASHBOARD ----------------
 @app.route('/admin_dashboard')
 def admin_dashboard():
-    return render_template('09_admin_dashboard.html')
+    return render_template('admin_dashboard.html')
 
+# ---------------- VIEW BOOKINGS ----------------
 @app.route('/view_bookings')
 def view_bookings():
     conn = get_db_connection()
@@ -198,8 +210,9 @@ def view_bookings():
 
     conn.close()
 
-    return render_template('10_view_bookings.html', bookings=bookings)
+    return render_template('view_bookings.html', bookings=bookings)
 
+# ---------------- VIEW USERS ----------------
 @app.route('/view_users')
 def view_users():
     conn = get_db_connection()
@@ -210,7 +223,8 @@ def view_users():
 
     conn.close()
 
-    return render_template('11_view_users.html', users=users)
+    return render_template('view_users.html', users=users)
 
+# ---------------- RUN ----------------
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
