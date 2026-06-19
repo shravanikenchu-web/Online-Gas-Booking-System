@@ -1,4 +1,4 @@
-            from flask import Flask, render_template, request, redirect, session, flash
+from flask import Flask, render_template, request, redirect, session, flash
 import psycopg2
 
 app = Flask(__name__)
@@ -53,7 +53,7 @@ def register():
 
         cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
         if cursor.fetchone():
-            flash("User already exists! Please login.")
+            flash("User already exists!")
             return redirect('/login')
 
         cursor.execute(
@@ -179,7 +179,8 @@ def admin():
         if username == "admin" and password == "admin123":
             return redirect('/admin_dashboard')
 
-        return "Invalid Admin Credentials"
+        flash("Invalid Admin Credentials")
+        return redirect('/admin')
 
     return render_template('08_admin_login.html')
 
