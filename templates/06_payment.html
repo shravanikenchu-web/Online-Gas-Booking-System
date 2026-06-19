@@ -2,26 +2,71 @@
 <html>
 <head>
     <title>Payment Page</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+            text-align: center;
+        }
+
+        .box {
+            width: 350px;
+            margin: 100px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px #ccc;
+        }
+
+        h3 {
+            color: green;
+        }
+
+        button {
+            width: 90%;
+            padding: 10px;
+            margin: 10px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .history {
+            background: #007bff;
+        }
+
+        .dashboard {
+            background: #28a745;
+        }
+    </style>
+
 </head>
 
 <body>
 
 <h1>Payment Page</h1>
 
-<p>Your booking has been created successfully.</p>
+<div class="box">
 
-<h3>Payment Status: Successful</h3>
+    <p>Your booking has been created successfully.</p>
 
-<p>Amount will be processed automatically.</p>
+    <h3>Payment Status: Successful</h3>
 
-<a href="/history">
-    <button>View Booking History</button>
-</a>
+    <p>Amount will be processed automatically.</p>
 
-<a href="/dashboard">
-    <button>Back to Dashboard</button>
-</a>
+    <a href="/history">
+        <button class="history">View Booking History</button>
+    </a>
+
+    <a href="/dashboard">
+        <button class="dashboard">Back to Dashboard</button>
+    </a>
+
+</div>
 
 </body>
 </html>
