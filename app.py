@@ -1,36 +1,36 @@
 from flask import Flask, render_template, request, redirect, session, flash
 import psycopg2
-import os
 
 app = Flask(__name__)
 app.secret_key = "gas_booking_secret_key"
 
+# 🔥 PostgreSQL URL (Render)
 DATABASE_URL = "postgresql://online_gas_booking_system_user:SovsbFtIkVSI1Iv0wpxgcE1ZziROpHYd@dpg-d8qi2da8qa3s73ca415g-a/online_gas_booking_system"
 
-# ✅ FIXED DATABASE PATH (IMPORTANT)
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "gas_booking.db")
+
+# DB connection
+def get_db_connection():
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    return conn
 
 
 # Create tables automatically
 def create_tables():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
-    # USERS TABLE
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS users(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         name TEXT,
         email TEXT UNIQUE,
         password TEXT
     )
     ''')
 
-    # BOOKINGS TABLE
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS bookings(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         user_email TEXT,
         cylinder_type TEXT,
         amount TEXT,
@@ -60,11 +60,10 @@ def register():
         email = request.form['email']
         password = request.form['password']
 
-        conn = sqlite3.connect(DB_PATH)
+        conn = get_db_connection()
         cursor = conn.cursor()
 
-        # check duplicate
-        cursor.execute("SELECT * FROM users WHERE email=?", (email,))
+        cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
         existing = cursor.fetchone()
 
         if existing:
@@ -72,7 +71,7 @@ def register():
             return redirect('/login')
 
         cursor.execute(
-            "INSERT INTO users(name,email,password) VALUES(?,?,?)",
+            "INSERT INTO users(name,email,password) VALUES(%s,%s,%s)",
             (name, email, password)
         )
 
@@ -94,11 +93,11 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        conn = sqlite3.connect(DB_PATH)
+        conn = get_db_connection()
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT * FROM users WHERE email=? AND password=?",
+            "SELECT * FROM users WHERE email=%s AND password=%s",
             (email, password)
         )
 
@@ -137,21 +136,19 @@ def booking():
         amount = request.form['amount']
         user_email = session['user']
 
-        conn = sqlite3.connect(DB_PATH)
+        conn = get_db_connection()
         cursor = conn.cursor()
 
         cursor.execute(
-            "INSERT INTO bookings(user_email, cylinder_type, amount, status) VALUES(?,?,?,?)",
+            "INSERT INTO bookings(user_email, cylinder_type, amount, status) VALUES(%s,%s,%s,%s)",
             (user_email, cylinder_type, amount, 'Booked')
         )
-
-        booking_id = cursor.lastrowid
 
         conn.commit()
         conn.close()
 
         flash("Booking Successful!")
-        return redirect(f'/payment/{booking_id}')
+        return redirect('/history')
 
     return render_template('05_booking.html')
 
@@ -163,11 +160,11 @@ def payment(booking_id):
     if 'user' not in session:
         return redirect('/login')
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute(
-        "UPDATE bookings SET status=? WHERE id=?",
+        "UPDATE bookings SET status=%s WHERE id=%s",
         ("Paid", booking_id)
     )
 
@@ -177,18 +174,18 @@ def payment(booking_id):
     return render_template('06_payment.html')
 
 
-# History (FIXED)
+# History
 @app.route('/history')
 def history():
 
     if 'user' not in session:
         return redirect('/login')
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT id, cylinder_type, amount, status FROM bookings WHERE user_email=?",
+        "SELECT id, cylinder_type, amount, status FROM bookings WHERE user_email=%s",
         (session['user'],)
     )
 
@@ -233,7 +230,7 @@ def admin_dashboard():
 @app.route('/view_bookings')
 def view_bookings():
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM bookings")
@@ -248,7 +245,7 @@ def view_bookings():
 @app.route('/view_users')
 def view_users():
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM users")
