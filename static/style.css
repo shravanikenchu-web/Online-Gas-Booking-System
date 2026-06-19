@@ -1,24 +1,68 @@
-body{
+body {
     font-family: Arial, sans-serif;
     background: #f4f4f4;
     text-align: center;
+    margin: 0;
 }
 
-h1{
+h1 {
     color: #0d6efd;
 }
 
-button{
-    padding: 12px 25px;
+/* container for forms/cards */
+.container {
+    margin-top: 80px;
+}
+
+/* buttons */
+button {
+    padding: 12px 20px;
     background: #0d6efd;
     color: white;
     border: none;
     border-radius: 5px;
     margin: 10px;
+    cursor: pointer;
 }
 
-input{
-    width: 250px;
+button:hover {
+    opacity: 0.9;
+}
+
+/* inputs */
+input, select {
+    width: 260px;
     padding: 10px;
-    margin: 10px;
+    margin: 10px 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* forms */
+form {
+    background: white;
+    width: 320px;
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px #ccc;
+}
+
+/* tables */
+table {
+    margin: auto;
+    border-collapse: collapse;
+    width: 80%;
+    background: white;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+th {
+    background: #0d6efd;
+    color: white;
 }
