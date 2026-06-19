@@ -1,22 +1,39 @@
-<div class="container mt-5">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 
-<h2 class="text-center">History</h2>
+<body>
 
-<table class="table table-bordered">
+<h1>Booking History</h1>
 
-<tr>
-<th>ID</th><th>Type</th><th>Amount</th><th>Status</th>
-</tr>
+<table border="1" align="center" cellpadding="10">
 
-{% for row in bookings %}
-<tr>
-<td>{{ row[0] }}</td>
-<td>{{ row[1] }}</td>
-<td>{{ row[2] }}</td>
-<td>{{ row[3] }}</td>
-</tr>
-{% endfor %}
+    <tr>
+        <th>ID</th>
+        <th>Cylinder Type</th>
+        <th>Amount</th>
+        <th>Status</th>
+    </tr>
+
+    {% for row in bookings %}
+    <tr>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
+        <td>{{ row[3] }}</td>
+    </tr>
+    {% endfor %}
 
 </table>
 
-</div>
+<br>
+
+<a href="/dashboard">
+    <button>Back to Dashboard</button>
+</a>
+
+</body>
+</html>
