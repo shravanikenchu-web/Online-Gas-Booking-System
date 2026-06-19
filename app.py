@@ -123,7 +123,7 @@ def dashboard():
     return render_template('04_dashboard.html')
 
 
-# Booking
+# Booking (FIXED PAYMENT FLOW)
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
 
@@ -139,16 +139,21 @@ def booking():
         conn = get_db_connection()
         cursor = conn.cursor()
 
+        # INSERT + GET ID (IMPORTANT FIX)
         cursor.execute(
-            "INSERT INTO bookings(user_email, cylinder_type, amount, status) VALUES(%s,%s,%s,%s)",
+            "INSERT INTO bookings(user_email, cylinder_type, amount, status) VALUES(%s,%s,%s,%s) RETURNING id",
             (user_email, cylinder_type, amount, 'Booked')
         )
+
+        booking_id = cursor.fetchone()[0]
 
         conn.commit()
         conn.close()
 
         flash("Booking Successful!")
-        return redirect('/history')
+
+        # 🔥 Redirect to payment page
+        return redirect(f'/payment/{booking_id}')
 
     return render_template('05_booking.html')
 
