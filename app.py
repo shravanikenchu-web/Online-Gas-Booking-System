@@ -43,7 +43,7 @@ create_tables()
 # ---------------- HOME ----------------
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('01_index.html')
 
 # ---------------- REGISTER ----------------
 @app.route('/register', methods=['GET', 'POST'])
@@ -72,7 +72,7 @@ def register():
         flash("Registration Successful!")
         return redirect('/login')
 
-    return render_template('register.html')
+    return render_template('02_register.html')
 
 # ---------------- LOGIN ----------------
 @app.route('/login', methods=['GET', 'POST'])
@@ -99,14 +99,14 @@ def login():
         flash("Invalid credentials!")
         return redirect('/login')
 
-    return render_template('login.html')
+    return render_template('03_login.html')
 
 # ---------------- DASHBOARD ----------------
 @app.route('/dashboard')
 def dashboard():
     if 'user' not in session:
         return redirect('/login')
-    return render_template('dashboard.html')
+    return render_template('04_dashboard.html')
 
 # ---------------- BOOKING ----------------
 @app.route('/booking', methods=['GET', 'POST'])
@@ -135,7 +135,7 @@ def booking():
 
         return redirect(f'/payment/{booking_id}')
 
-    return render_template('booking.html')
+    return render_template('05_booking.html')
 
 # ---------------- PAYMENT ----------------
 @app.route('/payment/<int:booking_id>')
@@ -154,7 +154,7 @@ def payment(booking_id):
     conn.commit()
     conn.close()
 
-    return render_template('payment.html')
+    return render_template('06_payment.html')
 
 # ---------------- HISTORY ----------------
 @app.route('/history')
@@ -173,7 +173,7 @@ def history():
     bookings = cursor.fetchall()
     conn.close()
 
-    return render_template('history.html', bookings=bookings)
+    return render_template('07_history.html', bookings=bookings)
 
 # ---------------- LOGOUT ----------------
 @app.route('/logout')
@@ -194,12 +194,12 @@ def admin():
         flash("Invalid Admin Credentials")
         return redirect('/admin')
 
-    return render_template('admin_login.html')
+    return render_template('08_admin_login.html')
 
 # ---------------- ADMIN DASHBOARD ----------------
 @app.route('/admin_dashboard')
 def admin_dashboard():
-    return render_template('admin_dashboard.html')
+    return render_template('09_admin_dashboard.html')
 
 # ---------------- VIEW BOOKINGS ----------------
 @app.route('/view_bookings')
@@ -212,7 +212,7 @@ def view_bookings():
 
     conn.close()
 
-    return render_template('view_bookings.html', bookings=bookings)
+    return render_template('10_view_bookings.html', bookings=bookings)
 
 # ---------------- VIEW USERS ----------------
 @app.route('/view_users')
@@ -225,7 +225,7 @@ def view_users():
 
     conn.close()
 
-    return render_template('view_users.html', users=users)
+    return render_template('11_view_users.html', users=users)
 
 # ---------------- RUN ----------------
 if __name__ == '__main__':
