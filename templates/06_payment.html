@@ -1,16 +1,27 @@
-<div class="container text-center mt-5">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 
-<div class="card p-4 shadow">
+<body>
 
-<h2>Payment</h2>
-<h4>₹1200</h4>
+<h1>Payment Page</h1>
 
-<button class="btn btn-success" onclick="alert('Payment Successful')">
-Pay Now
-</button>
+<p>Your booking has been created successfully.</p>
 
-<a href="/history" class="btn btn-primary mt-3">History</a>
+<h3>Payment Status: Successful</h3>
 
-</div>
+<p>Amount will be processed automatically.</p>
 
-</div>
+<a href="/history">
+    <button>View Booking History</button>
+</a>
+
+<a href="/dashboard">
+    <button>Back to Dashboard</button>
+</a>
+
+</body>
+</html>
