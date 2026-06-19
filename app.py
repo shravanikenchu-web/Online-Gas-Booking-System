@@ -9,18 +9,21 @@ def create_tables():
     conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
 
+    # USERS TABLE (FIXED: email UNIQUE + proper structure)
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS users(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
-        email TEXT,
+        email TEXT UNIQUE,
         password TEXT
     )
     ''')
 
+    # BOOKINGS TABLE (FIXED: linked to user_id)
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS bookings(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_email TEXT,
         cylinder_type TEXT,
         amount TEXT,
         status TEXT
@@ -32,12 +35,14 @@ def create_tables():
 
 create_tables()
 
+
 # Home
 @app.route('/')
 def home():
     return render_template('01_index.html')
 
-# Register
+
+# Register (FIXED: duplicate prevention)
 @app.route('/register', methods=['GET', 'POST'])
 def register():
 
@@ -49,6 +54,14 @@ def register():
 
         conn = sqlite3.connect('gas_booking.db')
         cursor = conn.cursor()
+
+        # CHECK DUPLICATE USER
+        cursor.execute("SELECT * FROM users WHERE email=?", (email,))
+        existing = cursor.fetchone()
+
+        if existing:
+            flash("User already exists! Please login.")
+            return redirect('/login')
 
         cursor.execute(
             "INSERT INTO users(name,email,password) VALUES(?,?,?)",
@@ -63,7 +76,8 @@ def register():
 
     return render_template('02_register.html')
 
-# Login (SESSION ADDED)
+
+# Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
@@ -93,14 +107,16 @@ def login():
 
     return render_template('03_login.html')
 
-# Dashboard (PROTECTED)
+
+# Dashboard
 @app.route('/dashboard')
 def dashboard():
     if 'user' not in session:
         return redirect('/login')
     return render_template('04_dashboard.html')
 
-# Booking (PROTECTED)
+
+# Booking (FIXED: store user_email)
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
 
@@ -111,16 +127,18 @@ def booking():
 
         cylinder_type = request.form['cylinder_type']
         amount = request.form['amount']
+        user_email = session['user']
 
         conn = sqlite3.connect('gas_booking.db')
         cursor = conn.cursor()
 
         cursor.execute(
-            "INSERT INTO bookings(cylinder_type, amount, status) VALUES(?,?,?)",
-            (cylinder_type, amount, 'Booked')
+            "INSERT INTO bookings(user_email, cylinder_type, amount, status) VALUES(?,?,?,?)",
+            (user_email, cylinder_type, amount, 'Booked')
         )
 
         booking_id = cursor.lastrowid
+
         conn.commit()
         conn.close()
 
@@ -129,9 +147,13 @@ def booking():
 
     return render_template('05_booking.html')
 
-# Payment (PROFESSIONAL)
+
+# Payment
 @app.route('/payment/<int:booking_id>')
 def payment(booking_id):
+
+    if 'user' not in session:
+        return redirect('/login')
 
     conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
@@ -146,7 +168,8 @@ def payment(booking_id):
 
     return render_template('06_payment.html')
 
-# History (PROTECTED)
+
+# HISTORY (FIXED: show only logged-in user data)
 @app.route('/history')
 def history():
 
@@ -156,19 +179,24 @@ def history():
     conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
 
-    cursor.execute("SELECT id, cylinder_type, amount, status FROM bookings")
-    bookings = cursor.fetchall()
+    cursor.execute(
+        "SELECT id, cylinder_type, amount, status FROM bookings WHERE user_email=?",
+        (session['user'],)
+    )
 
+    bookings = cursor.fetchall()
     conn.close()
 
     return render_template('07_history.html', bookings=bookings)
 
-# Logout (SESSION CLEAR)
+
+# Logout
 @app.route('/logout')
 def logout():
     session.pop('user', None)
     flash("Logged out successfully!")
     return redirect('/')
+
 
 # Admin login
 @app.route('/admin', methods=['GET', 'POST'])
@@ -186,12 +214,14 @@ def admin():
 
     return render_template('08_admin_login.html')
 
+
 # Admin dashboard
 @app.route('/admin_dashboard')
 def admin_dashboard():
     return render_template('09_admin_dashboard.html')
 
-# View bookings
+
+# View bookings (ADMIN)
 @app.route('/view_bookings')
 def view_bookings():
 
@@ -205,7 +235,8 @@ def view_bookings():
 
     return render_template('10_view_bookings.html', bookings=bookings)
 
-# View users
+
+# View users (ADMIN)
 @app.route('/view_users')
 def view_users():
 
@@ -219,5 +250,6 @@ def view_users():
 
     return render_template('11_view_users.html', users=users)
 
+
 if __name__ == '__main__':
-    app.run(debug=True)    
+    app.run(debug=True)
