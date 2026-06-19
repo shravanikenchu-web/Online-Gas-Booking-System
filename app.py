@@ -1,19 +1,14 @@
-from flask import Flask, render_template, request, redirect, session, flash
+            from flask import Flask, render_template, request, redirect, session, flash
 import psycopg2
-import os
 
 app = Flask(__name__)
 app.secret_key = "gas_booking_secret_key"
 
-# 🔥 Render PostgreSQL DB (use environment variable in production)
-DATABASE_URL = os.environ.get("DATABASE_URL")
+DATABASE_URL = "postgresql://online_gas_booking_system_user:SovsbFtIkVSI1Iv0wpxgcE1ZziROpHYd@dpg-d8qi2da8qa3s73ca415g-a/online_gas_booking_system"
 
-# DB connection
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, sslmode='require')
 
-
-# Create tables
 def create_tables():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -42,14 +37,10 @@ def create_tables():
 
 create_tables()
 
-
-# Home
 @app.route('/')
 def home():
     return render_template('01_index.html')
 
-
-# Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -78,8 +69,6 @@ def register():
 
     return render_template('02_register.html')
 
-
-# Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -106,16 +95,12 @@ def login():
 
     return render_template('03_login.html')
 
-
-# Dashboard
 @app.route('/dashboard')
 def dashboard():
     if 'user' not in session:
         return redirect('/login')
     return render_template('04_dashboard.html')
 
-
-# Booking → goes to payment
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
     if 'user' not in session:
@@ -144,8 +129,6 @@ def booking():
 
     return render_template('05_booking.html')
 
-
-# Payment
 @app.route('/payment/<int:booking_id>')
 def payment(booking_id):
     if 'user' not in session:
@@ -162,11 +145,8 @@ def payment(booking_id):
     conn.commit()
     conn.close()
 
-    flash("Payment Successful!")
-    return redirect('/history')
+    return render_template('06_payment.html')
 
-
-# History
 @app.route('/history')
 def history():
     if 'user' not in session:
@@ -175,27 +155,21 @@ def history():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT id, cylinder_type, amount, status
-        FROM bookings
-        WHERE user_email=%s
-        ORDER BY id DESC
-    """, (session['user'],))
+    cursor.execute(
+        "SELECT id, cylinder_type, amount, status FROM bookings WHERE user_email=%s",
+        (session['user'],)
+    )
 
     bookings = cursor.fetchall()
     conn.close()
 
     return render_template('07_history.html', bookings=bookings)
 
-
-# Logout
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
 
-
-# Admin login
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     if request.method == 'POST':
@@ -209,14 +183,10 @@ def admin():
 
     return render_template('08_admin_login.html')
 
-
-# Admin dashboard
 @app.route('/admin_dashboard')
 def admin_dashboard():
     return render_template('09_admin_dashboard.html')
 
-
-# View bookings
 @app.route('/view_bookings')
 def view_bookings():
     conn = get_db_connection()
@@ -229,8 +199,6 @@ def view_bookings():
 
     return render_template('10_view_bookings.html', bookings=bookings)
 
-
-# View users
 @app.route('/view_users')
 def view_users():
     conn = get_db_connection()
@@ -242,7 +210,6 @@ def view_users():
     conn.close()
 
     return render_template('11_view_users.html', users=users)
-
 
 if __name__ == '__main__':
     app.run()
