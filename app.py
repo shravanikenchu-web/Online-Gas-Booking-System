@@ -4,8 +4,10 @@ import psycopg2
 app = Flask(__name__)
 app.secret_key = "gas_booking_secret_key"
 
-DATABASE_URL = "postgresql://online_gas_booking_system_user:SovsbFtIkVSI1Iv0wpxgcE1ZziROpHYd@dpg-d8qi2da8qa3s73ca415g-a/online_gas_booking_system"
 
+import os
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, sslmode='require')
 
