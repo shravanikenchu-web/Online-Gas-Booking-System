@@ -4,31 +4,30 @@ import psycopg2
 app = Flask(__name__)
 app.secret_key = "gas_booking_secret_key"
 
-# 🔥 PostgreSQL URL (Render)
+# 🔥 PostgreSQL (Render)
 DATABASE_URL = "postgresql://online_gas_booking_system_user:SovsbFtIkVSI1Iv0wpxgcE1ZziROpHYd@dpg-d8qi2da8qa3s73ca415g-a/online_gas_booking_system"
 
 
 # DB connection
 def get_db_connection():
-    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-    return conn
+    return psycopg2.connect(DATABASE_URL, sslmode='require')
 
 
-# Create tables automatically
+# Create tables
 def create_tables():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute('''
+    cursor.execute("""
     CREATE TABLE IF NOT EXISTS users(
         id SERIAL PRIMARY KEY,
         name TEXT,
         email TEXT UNIQUE,
         password TEXT
     )
-    ''')
+    """)
 
-    cursor.execute('''
+    cursor.execute("""
     CREATE TABLE IF NOT EXISTS bookings(
         id SERIAL PRIMARY KEY,
         user_email TEXT,
@@ -36,7 +35,7 @@ def create_tables():
         amount TEXT,
         status TEXT
     )
-    ''')
+    """)
 
     conn.commit()
     conn.close()
@@ -55,7 +54,6 @@ def home():
 def register():
 
     if request.method == 'POST':
-
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
@@ -64,9 +62,7 @@ def register():
         cursor = conn.cursor()
 
         cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
-        existing = cursor.fetchone()
-
-        if existing:
+        if cursor.fetchone():
             flash("User already exists! Please login.")
             return redirect('/login')
 
@@ -78,7 +74,7 @@ def register():
         conn.commit()
         conn.close()
 
-        flash("Registration Successful! Please login.")
+        flash("Registration Successful!")
         return redirect('/login')
 
     return render_template('02_register.html')
@@ -89,7 +85,6 @@ def register():
 def login():
 
     if request.method == 'POST':
-
         email = request.form['email']
         password = request.form['password']
 
@@ -106,11 +101,10 @@ def login():
 
         if user:
             session['user'] = email
-            flash("Login Successful!")
             return redirect('/dashboard')
-        else:
-            flash("Invalid credentials!")
-            return redirect('/login')
+
+        flash("Invalid credentials!")
+        return redirect('/login')
 
     return render_template('03_login.html')
 
@@ -139,10 +133,13 @@ def booking():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # INSERT + GET ID (IMPORTANT FIX)
         cursor.execute(
-            "INSERT INTO bookings(user_email, cylinder_type, amount, status) VALUES(%s,%s,%s,%s) RETURNING id",
-            (user_email, cylinder_type, amount, 'Booked')
+            """
+            INSERT INTO bookings(user_email, cylinder_type, amount, status)
+            VALUES(%s,%s,%s,%s)
+            RETURNING id
+            """,
+            (user_email, cylinder_type, amount, "Booked")
         )
 
         booking_id = cursor.fetchone()[0]
@@ -150,9 +147,6 @@ def booking():
         conn.commit()
         conn.close()
 
-        flash("Booking Successful!")
-
-        # 🔥 Redirect to payment page
         return redirect(f'/payment/{booking_id}')
 
     return render_template('05_booking.html')
@@ -203,8 +197,7 @@ def history():
 # Logout
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
-    flash("Logged out successfully!")
+    session.clear()
     return redirect('/')
 
 
@@ -213,14 +206,13 @@ def logout():
 def admin():
 
     if request.method == 'POST':
-
         username = request.form['username']
         password = request.form['password']
 
         if username == "admin" and password == "admin123":
             return redirect('/admin_dashboard')
-        else:
-            return "Invalid Admin Credentials"
+
+        return "Invalid Admin Credentials"
 
     return render_template('08_admin_login.html')
 
@@ -238,7 +230,7 @@ def view_bookings():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM bookings")
+    cursor.execute("SELECT * FROM bookings ORDER BY id DESC")
     bookings = cursor.fetchall()
 
     conn.close()
@@ -253,7 +245,7 @@ def view_users():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM users")
+    cursor.execute("SELECT * FROM users ORDER BY id DESC")
     users = cursor.fetchall()
 
     conn.close()
@@ -262,4 +254,4 @@ def view_users():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
