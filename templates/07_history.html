@@ -1,34 +1,22 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Booking History</title>
-</head>
-<body>
+<div class="container mt-5">
 
-<h2>Booking History</h2>
+<h2 class="text-center">History</h2>
 
-<table border="1">
-    <tr>
-        <th>ID</th>
-        <th>Cylinder Type</th>
-        <th>Amount</th>
-        <th>Status</th>
-    </tr>
+<table class="table table-bordered">
 
-    {% for row in bookings %}
-    <tr>
-        <td>{{ row[0] }}</td>
-        <td>{{ row[1] }}</td>
-        <td>{{ row[2] }}</td>
-        <td>{{ row[3] }}</td>
-    </tr>
-    {% endfor %}
+<tr>
+<th>ID</th><th>Type</th><th>Amount</th><th>Status</th>
+</tr>
+
+{% for row in bookings %}
+<tr>
+<td>{{ row[0] }}</td>
+<td>{{ row[1] }}</td>
+<td>{{ row[2] }}</td>
+<td>{{ row[3] }}</td>
+</tr>
+{% endfor %}
 
 </table>
 
-<br>
-
-<a href="/dashboard">Back to Dashboard</a>
-
-</body>
-</html>
+</div>
