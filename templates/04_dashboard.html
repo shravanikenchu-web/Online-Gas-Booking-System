@@ -2,35 +2,62 @@
 <html>
 <head>
     <title>Dashboard</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+            text-align: center;
+        }
+
+        .container {
+            margin-top: 80px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        button {
+            width: 200px;
+            padding: 12px;
+            margin: 10px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .book { background: #28a745; }
+        .history { background: #007bff; }
+        .logout { background: #dc3545; }
+        .admin { background: #6c757d; }
+    </style>
+
 </head>
 
 <body>
 
-<h1>Customer Dashboard</h1>
-<p>Welcome to Online Gas Booking System</p>
+<div class="container">
 
-<a href="/booking">
-    <button>Book Cylinder</button>
-</a>
+    <h1>Customer Dashboard</h1>
+    <p>Welcome to Online Gas Booking System</p>
 
-<br><br>
+    <a href="/booking"><button class="book">Book Cylinder</button></a>
+    <br>
 
-<a href="/history">
-    <button>Booking History</button>
-</a>
+    <a href="/history"><button class="history">Booking History</button></a>
+    <br>
 
-<br><br>
+    <a href="/logout"><button class="logout">Logout</button></a>
+    <br>
 
-<a href="/logout">
-    <button>Logout</button>
-</a>
+    <a href="/admin"><button class="admin">Admin Login</button></a>
 
-<br><br>
-
-<a href="/admin">
-    <button>Admin Login</button>
-</a>
+</div>
 
 </body>
 </html>
