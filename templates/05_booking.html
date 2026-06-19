@@ -2,39 +2,73 @@
 <html>
 <head>
     <title>Book Cylinder</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+            text-align: center;
+        }
+
+        .box {
+            width: 320px;
+            margin: 80px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px #ccc;
+        }
+
+        input, select {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .back-btn {
+            background: #007bff;
+        }
+    </style>
+
 </head>
 
 <body>
 
 <h1>Gas Cylinder Booking</h1>
 
+<div class="box">
+
 <form method="POST" action="/booking">
 
     <label>Cylinder Type:</label>
-    <br>
     <select name="cylinder_type" required>
         <option value="Domestic">Domestic</option>
         <option value="Commercial">Commercial</option>
     </select>
 
-    <br><br>
-
     <label>Amount:</label>
-    <br>
     <input type="text" name="amount" value="1200" required>
-
-    <br><br>
 
     <button type="submit">Book Now</button>
 
 </form>
 
-<br>
-
 <a href="/dashboard">
-    <button>Back to Dashboard</button>
+    <button class="back-btn">Back to Dashboard</button>
 </a>
+
+</div>
 
 </body>
 </html>
