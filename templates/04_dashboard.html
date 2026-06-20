@@ -1,63 +1,21 @@
-<!DOCTYPE html>
+<! DOCTYPE html>
 <html>
 <head>
     <title>Dashboard</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-    <style>
-        body {
-            font-family: Arial;
-            background: #f4f4f4;
-            text-align: center;
-        }
-
-        .container {
-            margin-top: 80px;
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        button {
-            width: 200px;
-            padding: 12px;
-            margin: 10px;
-            border: none;
-            color: white;
-            cursor: pointer;
-            border-radius: 6px;
-            font-size: 16px;
-        }
-
-        .book { background: #28a745; }
-        .history { background: #007bff; }
-        .logout { background: #dc3545; }
-        .admin { background: #6c757d; }
-    </style>
-
 </head>
-
 <body>
 
-<div class="container">
+<h1>Dashboard Opened Successfully</h1>
 
-    <h1>Customer Dashboard</h1>
-    <p>Welcome to Online Gas Booking System</p>
+<a href="/booking">Book Cylinder</a>
 
-    <a href="/booking"><button class="book">Book Cylinder</button></a>
-    <br>
+<br><br>
 
-    <a href="/history"><button class="history">Booking History</button></a>
-    <br>
+<a href="/history">Booking History</a>
 
-    <a href="/logout"><button class="logout">Logout</button></a>
-    <br>
+<br><br>
 
-    <a href="/admin"><button class="admin">Admin Login</button></a>
-
-</div>
+<a href="/logout">Logout</a>
 
 </body>
 </html>
