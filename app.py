@@ -5,6 +5,7 @@ app = Flask(__name__)
 app.secret_key = "gas_booking_secret_key"
 
 
+# Create Database Tables
 def create_tables():
     conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
@@ -34,14 +35,17 @@ def create_tables():
 create_tables()
 
 
+# Home Page
 @app.route('/')
 def home():
     return render_template('01_index.html')
 
 
+# Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
@@ -51,10 +55,11 @@ def register():
 
         try:
             cursor.execute(
-                "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+                "INSERT INTO users(name,email,password) VALUES(?,?,?)",
                 (name, email, password)
             )
             conn.commit()
+
         except:
             conn.close()
             return "Email already registered!"
@@ -65,9 +70,12 @@ def register():
     return render_template('02_register.html')
 
 
+# Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+
     if request.method == 'POST':
+
         email = request.form['email']
         password = request.form['password']
 
@@ -91,20 +99,25 @@ def login():
     return render_template('03_login.html')
 
 
+# User Dashboard
 @app.route('/dashboard')
 def dashboard():
+
     if 'user' not in session:
         return redirect('/login')
 
     return render_template('04_dashboard.html')
 
 
+# Booking Page
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
+
     if 'user' not in session:
         return redirect('/login')
 
     if request.method == 'POST':
+
         cylinder_type = request.form['cylinder_type']
         amount = request.form['amount']
 
@@ -112,20 +125,35 @@ def booking():
         cursor = conn.cursor()
 
         cursor.execute(
-            "INSERT INTO bookings (cylinder_type, amount, status) VALUES (?, ?, ?)",
+            "INSERT INTO bookings(cylinder_type,amount,status) VALUES(?,?,?)",
             (cylinder_type, amount, "Booked")
         )
 
         conn.commit()
         conn.close()
 
-        return redirect('/history')
+        return redirect('/payment')
 
     return render_template('05_booking.html')
 
 
+# Payment Page
+@app.route('/payment', methods=['GET', 'POST'])
+def payment():
+
+    if 'user' not in session:
+        return redirect('/login')
+
+    if request.method == 'POST':
+        return redirect('/history')
+
+    return render_template('06_payment.html')
+
+
+# Booking History
 @app.route('/history')
 def history():
+
     if 'user' not in session:
         return redirect('/login')
 
@@ -143,15 +171,20 @@ def history():
     )
 
 
+# Logout
 @app.route('/logout')
 def logout():
+
     session.clear()
     return redirect('/')
 
 
+# Admin Login
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
+
     if request.method == 'POST':
+
         username = request.form['username']
         password = request.form['password']
 
@@ -163,13 +196,16 @@ def admin():
     return render_template('08_admin_login.html')
 
 
+# Admin Dashboard
 @app.route('/admin_dashboard')
 def admin_dashboard():
     return render_template('09_admin_dashboard.html')
 
 
+# View All Bookings
 @app.route('/view_bookings')
 def view_bookings():
+
     conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
 
@@ -184,8 +220,10 @@ def view_bookings():
     )
 
 
+# View All Users
 @app.route('/view_users')
 def view_users():
+
     conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
 
@@ -201,4 +239,4 @@ def view_users():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+    app.run(host='0.0.0.0', port=10000, debug=True)
