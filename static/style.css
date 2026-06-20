@@ -1,68 +1,99 @@
 body {
     font-family: Arial, sans-serif;
-    background: #f4f4f4;
-    text-align: center;
+    background-color: #f8f9fa;
     margin: 0;
+    padding: 0;
 }
 
-h1 {
-    color: #0d6efd;
-}
-
-/* container for forms/cards */
 .container {
-    margin-top: 80px;
+    margin-top: 30px;
 }
 
-/* buttons */
-button {
-    padding: 12px 20px;
-    background: #0d6efd;
-    color: white;
+h1, h2, h3, h4 {
+    font-weight: bold;
+}
+
+.card {
     border: none;
-    border-radius: 5px;
-    margin: 10px;
-    cursor: pointer;
+    border-radius: 15px;
 }
 
-button:hover {
-    opacity: 0.9;
+.card:hover {
+    transform: translateY(-5px);
+    transition: 0.3s;
 }
 
-/* inputs */
-input, select {
-    width: 260px;
-    padding: 10px;
-    margin: 10px 0;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* forms */
-form {
-    background: white;
-    width: 320px;
-    margin: auto;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px #ccc;
-}
-
-/* tables */
 table {
-    margin: auto;
-    border-collapse: collapse;
-    width: 80%;
     background: white;
 }
 
-th, td {
-    padding: 10px;
-    border: 1px solid #ddd;
+.btn {
+    border-radius: 8px;
 }
 
-th {
-    background: #0d6efd;
+.navbar-brand {
+    font-weight: bold;
+}
+
+.footer {
+    background: #212529;
     color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: 30px;
+}
+
+.hero-section {
+    background: linear-gradient(to right, #0d6efd, #0dcaf0);
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.dashboard-card {
+    transition: 0.3s;
+}
+
+.dashboard-card:hover {
+    transform: scale(1.03);
+}
+
+.booking-card {
+    max-width: 650px;
+    margin: auto;
+}
+
+.admin-card {
+    max-width: 500px;
+    margin: auto;
+}
+
+.header-box {
+    background: linear-gradient(to right, #0d6efd, #6610f2);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.status-booked {
+    background: green;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 10px;
+}
+
+.status-pending {
+    background: orange;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 10px;
+}
+
+.status-delivered {
+    background: blue;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 10px;
 }
