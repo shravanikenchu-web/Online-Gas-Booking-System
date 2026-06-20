@@ -133,8 +133,7 @@ def view_users():
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM users")
-    
-users = cursor.fetchall()
+     users = cursor.fetchall()
 
     conn.close()
 
