@@ -1,24 +1,18 @@
 from flask import Flask, render_template, request, redirect, session
-import psycopg2
-import os
+import sqlite3
 
 app = Flask(__name__)
 app.secret_key = "gas_booking_secret_key"
 
-# ---------------- DATABASE CONNECTION ----------------
-DATABASE_URL = os.environ.get("DATABASE_URL")
 
-def get_connection():
-    return psycopg2.connect(DATABASE_URL)
-
-# ---------------- CREATE TABLES ----------------
+# ---------------- DATABASE ----------------
 def create_tables():
-    conn = get_connection()
+    conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users(
-        id SERIAL PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL
@@ -27,11 +21,11 @@ def create_tables():
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS bookings(
-        id SERIAL PRIMARY KEY,
-        email TEXT NOT NULL,
-        cylinder_type TEXT NOT NULL,
-        amount TEXT NOT NULL,
-        status TEXT NOT NULL
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT,
+        cylinder_type TEXT,
+        amount TEXT,
+        status TEXT
     )
     """)
 
@@ -40,10 +34,12 @@ def create_tables():
 
 create_tables()
 
+
 # ---------------- HOME ----------------
 @app.route('/')
 def home():
     return render_template('01_index.html')
+
 
 # ---------------- REGISTER ----------------
 @app.route('/register', methods=['GET', 'POST'])
@@ -53,12 +49,12 @@ def register():
         email = request.form['email']
         password = request.form['password']
 
-        conn = get_connection()
+        conn = sqlite3.connect('gas_booking.db')
         cursor = conn.cursor()
 
         try:
             cursor.execute(
-                "INSERT INTO users(name,email,password) VALUES(%s,%s,%s)",
+                "INSERT INTO users(name,email,password) VALUES(?,?,?)",
                 (name, email, password)
             )
             conn.commit()
@@ -71,6 +67,7 @@ def register():
 
     return render_template('02_register.html')
 
+
 # ---------------- LOGIN ----------------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -78,11 +75,11 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        conn = get_connection()
+        conn = sqlite3.connect('gas_booking.db')
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT * FROM users WHERE email=%s AND password=%s",
+            "SELECT * FROM users WHERE email=? AND password=?",
             (email, password)
         )
 
@@ -97,6 +94,7 @@ def login():
 
     return render_template('03_login.html')
 
+
 # ---------------- DASHBOARD ----------------
 @app.route('/dashboard')
 def dashboard():
@@ -104,6 +102,7 @@ def dashboard():
         return redirect('/login')
 
     return render_template('04_dashboard.html')
+
 
 # ---------------- BOOKING ----------------
 @app.route('/booking', methods=['GET', 'POST'])
@@ -116,11 +115,11 @@ def booking():
         amount = request.form['amount']
         email = session['user']
 
-        conn = get_connection()
+        conn = sqlite3.connect('gas_booking.db')
         cursor = conn.cursor()
 
         cursor.execute(
-            "INSERT INTO bookings(email,cylinder_type,amount,status) VALUES(%s,%s,%s,%s)",
+            "INSERT INTO bookings(email,cylinder_type,amount,status) VALUES(?,?,?,?)",
             (email, cylinder_type, amount, "Booked")
         )
 
@@ -130,6 +129,7 @@ def booking():
         return redirect('/payment')
 
     return render_template('05_booking.html')
+
 
 # ---------------- PAYMENT ----------------
 @app.route('/payment', methods=['GET', 'POST'])
@@ -142,7 +142,8 @@ def payment():
 
     return render_template('06_payment.html')
 
-# ---------------- HISTORY ----------------
+
+# ---------------- HISTORY (FIXED) ----------------
 @app.route('/history')
 def history():
     if 'user' not in session:
@@ -150,11 +151,11 @@ def history():
 
     email = session['user']
 
-    conn = get_connection()
+    conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT * FROM bookings WHERE email=%s",
+        "SELECT * FROM bookings WHERE email=?",
         (email,)
     )
 
@@ -163,13 +164,15 @@ def history():
 
     return render_template('07_history.html', bookings=bookings)
 
+
 # ---------------- LOGOUT ----------------
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
 
-# ---------------- ADMIN LOGIN ----------------
+
+# ---------------- ADMIN ----------------
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     if request.method == 'POST':
@@ -184,7 +187,7 @@ def admin():
 
     return render_template('08_admin_login.html')
 
-# ---------------- ADMIN DASHBOARD ----------------
+
 @app.route('/admin_dashboard')
 def admin_dashboard():
     if 'admin' not in session:
@@ -192,13 +195,13 @@ def admin_dashboard():
 
     return render_template('09_admin_dashboard.html')
 
-# ---------------- VIEW BOOKINGS ----------------
+
 @app.route('/view_bookings')
 def view_bookings():
     if 'admin' not in session:
         return redirect('/admin')
 
-    conn = get_connection()
+    conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM bookings")
@@ -208,13 +211,13 @@ def view_bookings():
 
     return render_template('10_view_bookings.html', bookings=bookings)
 
-# ---------------- VIEW USERS ----------------
+
 @app.route('/view_users')
 def view_users():
     if 'admin' not in session:
         return redirect('/admin')
 
-    conn = get_connection()
+    conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM users")
@@ -224,7 +227,7 @@ def view_users():
 
     return render_template('11_view_users.html', users=users)
 
+
 # ---------------- RUN ----------------
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=10000, debug=True)
