@@ -1,83 +1,33 @@
-<!DOCTYPE html>
+<! DOCTYPE html>
 <html>
 <head>
     <title>View Users</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-    <style>
-        body {
-            font-family: Arial;
-            background: #f4f4f4;
-            text-align: center;
-        }
-
-        .box {
-            width: 80%;
-            margin: 50px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px #ccc;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-        }
-
-        th {
-            background: #17a2b8;
-            color: white;
-        }
-
-        a button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-    </style>
-
 </head>
-
 <body>
 
 <h2>All Registered Users</h2>
 
-<div class="box">
+<table border="1">
 
-    <table>
+<tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Email</th>
+</tr>
 
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-        </tr>
+{% for row in users %}
+<tr>
+    <td>{{ row[0] }}</td>
+    <td>{{ row[1] }}</td>
+    <td>{{ row[2] }}</td>
+</tr>
+{% endfor %}
 
-        {% for row in users %}
-        <tr>
-            <td>{{ row[0] }}</td>
-            <td>{{ row[1] }}</td>
-            <td>{{ row[2] }}</td>
-        </tr>
-        {% endfor %}
+</table>
 
-    </table>
+<br>
 
-    <a href="/admin_dashboard">
-        <button>Back to Admin Dashboard</button>
-    </a>
-
-</div>
+<a href="/admin_dashboard">Back to Admin Dashboard</a>
 
 </body>
 </html>
