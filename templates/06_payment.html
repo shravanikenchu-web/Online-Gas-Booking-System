@@ -1,28 +1,142 @@
-<! DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body{
+            background:#f8f9fa;
+        }
+
+        .payment-card{
+            max-width:600px;
+            margin:auto;
+            margin-top:50px;
+        }
+
+        .header{
+            background:linear-gradient(to right,#198754,#20c997);
+            color:white;
+            text-align:center;
+            padding:20px;
+            border-radius:15px 15px 0 0;
+        }
+
+        .method-card{
+            border:1px solid #ddd;
+            padding:15px;
+            border-radius:10px;
+            margin-bottom:10px;
+        }
+    </style>
 </head>
+
 <body>
 
-<h2>Payment Page</h2>
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+        <span class="navbar-brand">
+            ⛽ Online Gas Booking System
+        </span>
 
-<form method="POST">
+        <a href="/dashboard" class="btn btn-light">
+            Dashboard
+        </a>
+    </div>
+</nav>
 
-    <label>Payment Method:</label>
+<div class="container">
 
-    <select name="payment_method">
-        <option>UPI</option>
-        <option>Debit Card</option>
-        <option>Credit Card</option>
-        <option>Cash on Delivery</option>
-    </select>
+    <div class="card shadow payment-card">
 
-    <br><br>
+        <div class="header">
+            <h2>Payment Gateway</h2>
+            <p>Complete Your Cylinder Booking</p>
+        </div>
 
-    <button type="submit">Pay Now</button>
+        <div class="card-body">
 
-</form>
+            <div class="alert alert-success text-center">
+                <h4>Amount Payable: ₹1200</h4>
+            </div>
+
+            <form method="POST">
+
+                <label class="form-label">
+                    Select Payment Method
+                </label>
+
+                <select name="payment_method" class="form-select mb-3">
+
+                    <option value="UPI">
+                        UPI Payment
+                    </option>
+
+                    <option value="Debit Card">
+                        Debit Card
+                    </option>
+
+                    <option value="Credit Card">
+                        Credit Card
+                    </option>
+
+                    <option value="Cash on Delivery">
+                        Cash on Delivery
+                    </option>
+
+                </select>
+
+                <button type="submit"
+                        class="btn btn-success w-100">
+                    Pay Now
+                </button>
+
+            </form>
+
+            <hr>
+
+            <div class="row text-center">
+
+                <div class="col-md-3">
+                    <div class="method-card">
+                        📱<br>
+                        UPI
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="method-card">
+                        💳<br>
+                        Debit Card
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="method-card">
+                        💳<br>
+                        Credit Card
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="method-card">
+                        🚚<br>
+                        COD
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 </body>
 </html>
