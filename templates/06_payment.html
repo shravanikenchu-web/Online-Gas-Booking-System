@@ -1,127 +1,427 @@
-<!DOCTYPE html>  <html lang="en">  <head>  
-    <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>Payment</title>  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">  
+<!DOCTYPE html>  
+<html lang="en">  
+    <head>    
+        <meta charset="UTF-8">    
+<meta name="viewport" content="width=device-width, initial-scale=1.0">    
+<title>Payment</title>  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<style>  
-    body{  
-        background:#f8f9fa;  
-    }  
+<style>    
+    body{    
+        background:#f8f9fa;    
+    }    
+  
+    .payment-card{    
+        max-width:600px;    
+        margin:auto;    
+        margin-top:50px;    
+    }    
+  
+    .header{    
+        background:linear-gradient(to right,#198754,#20c997);    
+        color:white;    
+        text-align:center;    
+        padding:20px;    
+        border-radius:15px 15px 0 0;    
+    }    
+  
+    .method-card{    
+        border:1px solid #ddd;    
+        padding:15px;    
+        border-radius:10px;    
+        margin-bottom:10px;    
+    }    
+</style>  </head>  <body>  <nav class="navbar navbar-dark bg-dark">    
+    <div class="container">    
+        <span class="navbar-brand">    
+            ⛽ Online Gas Booking System    
+        </span>  <a href="/dashboard" class="btn btn-light">    
+        Dashboard    
+    </a>    
+</div>  </nav>  <div class="container">  <div class="card shadow payment-card">    <div class="header">    
+    <h2>Payment Gateway</h2>    
+    <p>Complete Your Cylinder Booking</p>    
+</div>    
 
-    .payment-card{  
-        max-width:600px;  
-        margin:auto;  
-        margin-top:50px;  
-    }  
+<div class="card-body">    
 
-    .header{  
-        background:linear-gradient(to right,#198754,#20c997);  
-        color:white;  
-        text-align:center;  
-        padding:20px;  
-        border-radius:15px 15px 0 0;  
-    }  
+    <div class="alert alert-success text-center">    
+        <h4>Amount Payable: ₹1200</h4>    
+    </div>    
 
-    .method-card{  
-        border:1px solid #ddd;  
-        padding:15px;  
-        border-radius:10px;  
-        margin-bottom:10px;  
-    }  
-</style>
+    <form method="POST">    
 
-</head>  <body>  <nav class="navbar navbar-dark bg-dark">  
-    <div class="container">  
-        <span class="navbar-brand">  
-            ⛽ Online Gas Booking System  
-        </span>  <a href="/dashboard" class="btn btn-light">  
-        Dashboard  
-    </a>  
-</div>
+        <label class="form-label">    
+            Select Payment Method    
+        </label>    
 
-</nav>  <div class="container">  <div class="card shadow payment-card">  
+        <select name="payment_method" class="form-select mb-3">    
 
-    <div class="header">  
-        <h2>Payment Gateway</h2>  
-        <p>Complete Your Cylinder Booking</p>  
-    </div>  
+            <option value="UPI">    
+                UPI Payment    
+            </option>    
 
-    <div class="card-body">  
+            <option value="Debit Card">    
+                Debit Card    
+            </option>    
 
-        <div class="alert alert-success text-center">  
-            <h4>Amount Payable: ₹1200</h4>  
-        </div>  
+            <option value="Credit Card">    
+                Credit Card    
+            </option>    
 
-        <form method="POST">  
+            <option value="Cash on Delivery">    
+                Cash on Delivery    
+            </option>    
 
-            <label class="form-label">  
-                Select Payment Method  
-            </label>  
+        </select>    
 
-            <select name="payment_method" class="form-select mb-3">  
+        <button type="submit"    
+                class="btn btn-success w-100">    
+            Pay Now    
+        </button>    
 
-                <option value="UPI">  
-                    UPI Payment  
-                </option>  
+    </form>    
 
-                <option value="Debit Card">  
-                    Debit Card  
-                </option>  
+    <hr>    
 
-                <option value="Credit Card">  
-                    Credit Card  
-                </option>  
+    <div class="row text-center">    
 
-                <option value="Cash on Delivery">  
-                    Cash on Delivery  
-                </option>  
+        <div class="col-md-3">    
+            <div class="method-card">    
+                📱<br>    
+                UPI    
+            </div>    
+        </div>    
 
-            </select>  
+        <div class="col-md-3">    
+            <div class="method-card">    
+                💳<br>    
+                Debit Card    
+            </div>    
+        </div>    
 
-            <button type="submit"  
-                    class="btn btn-success w-100">  
-                Pay Now  
-            </button>  
+        <div class="col-md-3">    
+            <div class="method-card">    
+                💳<br>    
+                Credit Card    
+            </div>    
+        </div>    
 
-        </form>  
+        <div class="col-md-3">    
+            <div class="method-card">    
+                🚚<br>    
+                COD    
+            </div>    
+        </div>    
 
-        <hr>  
-
-        <div class="row text-center">  
-
-            <div class="col-md-3">  
-                <div class="method-card">  
-                    📱<br>  
-                    UPI  
-                </div>  
-            </div>  
-
-            <div class="col-md-3">  
-                <div class="method-card">  
-                    💳<br>  
-                    Debit Card  
-                </div>  
-            </div>  
-
-            <div class="col-md-3">  
-                <div class="method-card">  
-                    💳<br>  
-                    Credit Card  
-                </div>  
-            </div>  
-
-            <div class="col-md-3">  
-                <div class="method-card">  
-                    🚚<br>  
-                    COD  
-                </div>  
-            </div>  
-
-        </div>  
-
-    </div>  
+    </div>    
 
 </div>
 
-</div>  </body>  
-</html>
+</div>  </div>  </body>    
+</html>    
+History.html    
+<!DOCTYPE html>    
+<html lang="en">  <head>    
+    <meta charset="UTF-8">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <title>Booking History</title>  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">    <style>    
+    body{    
+        background:#f8f9fa;    
+    }    
+  
+    .header{    
+        background:linear-gradient(to right,#6610f2,#6f42c1);    
+        color:white;    
+        padding:25px;    
+        border-radius:15px;    
+        text-align:center;    
+        margin-bottom:20px;    
+    }    
+</style>  </head>  <body>  <nav class="navbar navbar-dark bg-dark">    
+    <div class="container">    
+        <span class="navbar-brand">    
+            ⛽ Online Gas Booking System    
+        </span>  <a href="/dashboard" class="btn btn-light">    
+        Dashboard    
+    </a>    
+</div>  </nav>  <div class="container mt-5">  <div class="header">    
+    <h2>Your Booking History</h2>    
+    <p>View all your gas cylinder bookings</p>    
+</div>    <div class="card shadow">    <div class="card-body">    
+
+    <div class="table-responsive">    
+
+        <table class="table table-bordered table-hover text-center">    
+
+            <thead class="table-dark">    
+                <tr>    
+                    <th>Booking ID</th>    
+                    <th>Cylinder Type</th>    
+                    <th>Amount</th>    
+                    <th>Status</th>    
+                </tr>    
+            </thead>    
+
+            <tbody>    
+
+            {% for row in bookings %}    
+                <tr>    
+                    <td>{{ row[0] }}</td>    
+                    <td>{{ row[1] }}</td>    
+                    <td>₹{{ row[2] }}</td>    
+
+                    <td>    
+                        <span class="badge bg-success">    
+                            {{ row[3] }}    
+                        </span>    
+                    </td>    
+                </tr>    
+            {% endfor %}    
+
+            </tbody>    
+
+        </table>    
+
+    </div>    
+
+    <div class="text-center mt-3">    
+        <a href="/booking" class="btn btn-primary">    
+            New Booking    
+        </a>    
+
+        <a href="/dashboard" class="btn btn-secondary">    
+            Dashboard    
+        </a>    
+    </div>    
+
+</div>
+
+</div>  </div>  </body>    
+</html>    
+App.py    
+from flask import Flask, render_template, request, redirect, session    
+import sqlite3  app = Flask(name)  
+app.secret_key = "gas_booking_secret_key"  ---------------- DATABASE ----------------
+
+def create_tables():
+conn = sqlite3.connect('gas_booking.db')
+cursor = conn.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS users(
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+name TEXT NOT NULL,
+email TEXT UNIQUE NOT NULL,
+password TEXT NOT NULL
+)
+""")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS bookings(
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+email TEXT,
+cylinder_type TEXT,
+amount TEXT,
+status TEXT
+)
+""")
+
+conn.commit()
+conn.close()
+
+create_tables()
+
+---------------- HOME ----------------
+
+@app.route('/')
+def home():
+return render_template('01_index.html')
+
+---------------- REGISTER ----------------
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+if request.method == 'POST':
+name = request.form['name']
+email = request.form['email']
+password = request.form['password']
+
+conn = sqlite3.connect('gas_booking.db')
+cursor = conn.cursor()
+
+try:    
+    cursor.execute(    
+        "INSERT INTO users(name,email,password) VALUES(?,?,?)",    
+        (name, email, password)    
+    )    
+    conn.commit()    
+except:    
+    conn.close()    
+    return "Email already registered!"    
+
+conn.close()    
+return redirect('/login')
+
+return render_template('02_register.html')
+
+---------------- LOGIN ----------------
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+if request.method == 'POST':
+email = request.form['email']
+password = request.form['password']
+
+conn = sqlite3.connect('gas_booking.db')
+cursor = conn.cursor()
+
+cursor.execute(    
+    "SELECT * FROM users WHERE email=? AND password=?",    
+    (email, password)    
+)    
+
+user = cursor.fetchone()    
+conn.close()    
+
+if user:    
+    session['user'] = email    
+    return redirect('/dashboard')    
+
+return "Invalid Email or Password!"
+
+return render_template('03_login.html')
+
+---------------- DASHBOARD ----------------
+
+@app.route('/dashboard')
+def dashboard():
+if 'user' not in session:
+return redirect('/login')
+
+return render_template('04_dashboard.html')
+
+---------------- BOOKING ----------------
+
+@app.route('/booking', methods=['GET', 'POST'])
+def booking():
+if 'user' not in session:
+return redirect('/login')
+
+if request.method == 'POST':
+cylinder_type = request.form['cylinder_type']
+amount = request.form['amount']
+email = session['user']
+
+conn = sqlite3.connect('gas_booking.db')    
+cursor = conn.cursor()    
+
+cursor.execute(    
+    "INSERT INTO bookings(email,cylinder_type,amount,status) VALUES(?,?,?,?)",    
+    (email, cylinder_type, amount, "Booked")    
+)    
+
+conn.commit()    
+conn.close()    
+
+return redirect('/payment')
+
+return render_template('05_booking.html')
+
+---------------- PAYMENT ----------------
+
+@app.route('/payment', methods=['GET', 'POST'])
+def payment():
+if 'user' not in session:
+return redirect('/login')
+
+if request.method == 'POST':
+return redirect('/history')
+
+return render_template('06_payment.html')
+
+---------------- HISTORY (FIXED) ----------------
+
+@app.route('/history')
+def history():
+if 'user' not in session:
+return redirect('/login')
+
+email = session['user']
+
+conn = sqlite3.connect('gas_booking.db')
+cursor = conn.cursor()
+
+cursor.execute(
+"SELECT id,cylinder_type,amount,status FROM bookings WHERE email=?",
+(email,)
+)
+
+bookings = cursor.fetchall()
+conn.close()
+
+return render_template('07_history.html', bookings=bookings)
+
+---------------- LOGOUT ----------------
+
+@app.route('/logout')
+def logout():
+session.clear()
+return redirect('/')
+
+---------------- ADMIN ----------------
+
+@app.route('/admin', methods=['GET', 'POST'])
+def admin():
+if request.method == 'POST':
+username = request.form['username']
+password = request.form['password']
+
+if username == "admin" and password == "admin123":
+session['admin'] = True
+return redirect('/admin_dashboard')
+
+return "Invalid Admin Credentials"
+
+return render_template('08_admin_login.html')
+
+@app.route('/admin_dashboard')
+def admin_dashboard():
+if 'admin' not in session:
+return redirect('/admin')
+
+return render_template('09_admin_dashboard.html')
+
+@app.route('/view_bookings')
+def view_bookings():
+if 'admin' not in session:
+return redirect('/admin')
+
+conn = sqlite3.connect('gas_booking.db')
+cursor = conn.cursor()
+
+cursor.execute("SELECT id,cylinder_type,amount,status FROM bookings")
+bookings = cursor.fetchall()
+
+conn.close()
+
+return render_template('10_view_bookings.html', bookings=bookings)
+
+@app.route('/view_users')
+def view_users():
+if 'admin' not in session:
+return redirect('/admin')
+
+conn = sqlite3.connect('gas_booking.db')
+cursor = conn.cursor()
+
+cursor.execute("SELECT * FROM users")
+users = cursor.fetchall()
+
+conn.close()
+
+return render_template('11_view_users.html', users=users)
+
+---------------- RUN ----------------
+
+if name == 'main':
+app.run(host='0.0.0.0', port=10000, debug=True)
