@@ -155,8 +155,8 @@ def history():
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT * FROM bookings WHERE email=?",
-        (email,)
+    "SELECT id,cylinder_type,amount,status FROM bookings WHERE email=?",
+    (email,)
     )
 
     bookings = cursor.fetchall()
@@ -204,7 +204,7 @@ def view_bookings():
     conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM bookings")
+    cursor.execute("SELECT id,cylinder_type,amount,status FROM bookings")
     bookings = cursor.fetchall()
 
     conn.close()
