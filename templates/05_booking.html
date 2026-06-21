@@ -60,17 +60,17 @@
                         Select Cylinder Type
                     </label>
 
-                    <select name="cylinder_type" class="form-select">
+                    <select name="cylinder_type" class="form-select" id="cylinderType">
 
-                        <option value="Domestic">
-                            Domestic Cylinder - ₹1200
-                        </option>
+    <option value="Domestic">
+        Domestic Cylinder - ₹1200
+    </option>
 
-                        <option value="Commercial">
-                            Commercial Cylinder - ₹2200
-                        </option>
+    <option value="Commercial">
+        Commercial Cylinder - ₹2200
+    </option>
 
-                    </select>
+</select>
                 </div>
 
                 <div class="mb-3">
@@ -80,6 +80,7 @@
 
                     <input type="text"
                            name="amount"
+                           id="amount"
                            value="1200"
                            class="form-control"
                            readonly>
@@ -121,6 +122,18 @@
     </div>
 
 </div>
+<script>
+document.getElementById("cylinderType").addEventListener("change", function() {
 
+    let amount = document.getElementById("amount");
+
+    if (this.value === "Commercial") {
+        amount.value = "2200";
+    } else {
+        amount.value = "1200";
+    }
+
+});
+</script>
 </body>
 </html>
