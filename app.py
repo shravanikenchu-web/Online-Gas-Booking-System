@@ -126,7 +126,8 @@ def booking():
         conn.commit()
         conn.close()
 
-        return redirect('/payment')
+        session['amount'] = amount
+return redirect('/payment')
 
     return render_template('05_booking.html')
 
@@ -140,7 +141,8 @@ def payment():
     if request.method == 'POST':
         return redirect('/history')
 
-    return render_template('06_payment.html')
+    amount = session.get('amount', '1200')
+return render_template('06_payment.html', amount=amount)
 
 
 # ---------------- HISTORY (FIXED) ----------------
