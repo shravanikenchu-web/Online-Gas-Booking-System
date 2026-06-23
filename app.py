@@ -1,39 +1,9 @@
 from flask import Flask, render_template, request, redirect, session
 import sqlite3
+import random
 
 app = Flask(__name__)
 app.secret_key = "gas_booking_secret_key"
-
-
-# ---------------- DATABASE ----------------
-def create_tables():
-    conn = sqlite3.connect('gas_booking.db')
-    cursor = conn.cursor()
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL
-    )
-    """)
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS bookings(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        email TEXT,
-        cylinder_type TEXT,
-        amount TEXT,
-        status TEXT
-    )
-    """)
-
-    conn.commit()
-    conn.close()
-
-
-create_tables()
 
 
 # ---------------- HOME ----------------
@@ -42,100 +12,113 @@ def home():
     return render_template('01_index.html')
 
 
-# ---------------- REGISTER ----------------
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
-
-        conn = sqlite3.connect('gas_booking.db')
-        cursor = conn.cursor()
-
-        try:
-            cursor.execute(
-                "INSERT INTO users(name,email,password) VALUES(?,?,?)",
-                (name, email, password)
-            )
-            conn.commit()
-        except:
-            conn.close()
-            return "Email already registered!"
-
-        conn.close()
-        return redirect('/login')
-
-    return render_template('02_register.html')
-
-
-# ---------------- LOGIN ----------------
+# ---------------- CUSTOMER LOGIN ----------------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+
+        consumer_id = request.form['consumer_id']
+        mobile = request.form['mobile']
 
         conn = sqlite3.connect('gas_booking.db')
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT * FROM users WHERE email=? AND password=?",
-            (email, password)
+            "SELECT * FROM users WHERE consumer_id=? AND mobile=?",
+            (consumer_id, mobile)
         )
 
         user = cursor.fetchone()
         conn.close()
 
         if user:
-            session['user'] = email
+            session['user_id'] = user[0]
+            session['name'] = user[1]
+            session['consumer_id'] = user[2]
+            session['mobile'] = user[3]
+
             return redirect('/dashboard')
 
-        return "Invalid Email or Password!"
+        return "Invalid Consumer ID or Mobile Number"
 
-    return render_template('03_login.html')
+    return render_template('02_login.html')
 
 
 # ---------------- DASHBOARD ----------------
 @app.route('/dashboard')
 def dashboard():
-    if 'user' not in session:
+
+    if 'consumer_id' not in session:
         return redirect('/login')
 
-    return render_template('04_dashboard.html')
+    return render_template('03_dashboard.html')
 
 
 # ---------------- BOOKING ----------------
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
-    if 'user' not in session:
+
+    if 'consumer_id' not in session:
         return redirect('/login')
 
     if request.method == 'POST':
-        cylinder_type = request.form['cylinder_type']
-        amount = request.form['amount']
-        email = session['user']
 
-        conn = sqlite3.connect('gas_booking.db')
-        cursor = conn.cursor()
+        session['cylinder_type'] = request.form['cylinder_type']
+        session['amount'] = request.form['amount']
 
-        cursor.execute(
-            "INSERT INTO bookings(email,cylinder_type,amount,status) VALUES(?,?,?,?)",
-            (email, cylinder_type, amount, "Booked")
-        )
+        otp = str(random.randint(1000, 9999))
+        session['otp'] = otp
 
-        conn.commit()
-        conn.close()
+        print("OTP =", otp)
 
-        return redirect('/payment')
+        return redirect('/verify_otp')
 
-    return render_template('05_booking.html')
+    return render_template('04_booking.html')
+
+
+# ---------------- OTP VERIFY ----------------
+@app.route('/verify_otp', methods=['GET', 'POST'])
+def verify_otp():
+
+    if request.method == 'POST':
+
+        entered_otp = request.form['otp']
+
+        if entered_otp == session.get('otp'):
+
+            conn = sqlite3.connect('gas_booking.db')
+            cursor = conn.cursor()
+
+            cursor.execute("""
+            INSERT INTO bookings
+            (consumer_id,name,mobile,cylinder_type,amount,status)
+            VALUES(?,?,?,?,?,?)
+            """,
+            (
+                session['consumer_id'],
+                session['name'],
+                session['mobile'],
+                session['cylinder_type'],
+                session['amount'],
+                "Booked"
+            ))
+
+            conn.commit()
+            conn.close()
+
+            return redirect('/payment')
+
+        return "Invalid OTP"
+
+    return render_template('05_verify_otp.html')
 
 
 # ---------------- PAYMENT ----------------
 @app.route('/payment', methods=['GET', 'POST'])
 def payment():
-    if 'user' not in session:
+
+    if 'consumer_id' not in session:
         return redirect('/login')
 
     if request.method == 'POST':
@@ -147,20 +130,21 @@ def payment():
 # ---------------- HISTORY ----------------
 @app.route('/history')
 def history():
-    if 'user' not in session:
-        return redirect('/login')
 
-    email = session['user']
+    if 'consumer_id' not in session:
+        return redirect('/login')
 
     conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
 
-    cursor.execute(
-        "SELECT id,cylinder_type,amount,status FROM bookings WHERE email=?",
-        (email,)
-    )
+    cursor.execute("""
+    SELECT id,cylinder_type,amount,status
+    FROM bookings
+    WHERE consumer_id=?
+    """, (session['consumer_id'],))
 
     bookings = cursor.fetchall()
+
     conn.close()
 
     return render_template('07_history.html', bookings=bookings)
@@ -169,14 +153,18 @@ def history():
 # ---------------- LOGOUT ----------------
 @app.route('/logout')
 def logout():
+
     session.clear()
+
     return redirect('/')
 
 
-# ---------------- ADMIN ----------------
+# ---------------- ADMIN LOGIN ----------------
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
+
     if request.method == 'POST':
+
         username = request.form['username']
         password = request.form['password']
 
@@ -189,32 +177,55 @@ def admin():
     return render_template('08_admin_login.html')
 
 
+# ---------------- ADMIN DASHBOARD ----------------
 @app.route('/admin_dashboard')
 def admin_dashboard():
+
     if 'admin' not in session:
         return redirect('/admin')
 
     return render_template('09_admin_dashboard.html')
 
 
-@app.route('/view_bookings')
-def view_bookings():
+# ---------------- ADD CUSTOMER ----------------
+@app.route('/add_customer', methods=['GET', 'POST'])
+def add_customer():
+
     if 'admin' not in session:
         return redirect('/admin')
 
-    conn = sqlite3.connect('gas_booking.db')
-    cursor = conn.cursor()
+    if request.method == 'POST':
 
-    cursor.execute("SELECT id,cylinder_type,amount,status FROM bookings")
-    bookings = cursor.fetchall()
+        name = request.form['name']
+        consumer_id = request.form['consumer_id']
+        mobile = request.form['mobile']
 
-    conn.close()
+        conn = sqlite3.connect('gas_booking.db')
+        cursor = conn.cursor()
 
-    return render_template('10_view_bookings.html', bookings=bookings)
+        try:
+            cursor.execute(
+                "INSERT INTO users(name,consumer_id,mobile) VALUES(?,?,?)",
+                (name, consumer_id, mobile)
+            )
+
+            conn.commit()
+
+        except:
+            conn.close()
+            return "Consumer ID Already Exists"
+
+        conn.close()
+
+        return redirect('/view_users')
+
+    return render_template('10_add_customer.html')
 
 
+# ---------------- VIEW USERS ----------------
 @app.route('/view_users')
 def view_users():
+
     if 'admin' not in session:
         return redirect('/admin')
 
@@ -222,6 +233,7 @@ def view_users():
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM users")
+
     users = cursor.fetchall()
 
     conn.close()
@@ -229,6 +241,38 @@ def view_users():
     return render_template('11_view_users.html', users=users)
 
 
+# ---------------- VIEW BOOKINGS ----------------
+@app.route('/view_bookings')
+def view_bookings():
+
+    if 'admin' not in session:
+        return redirect('/admin')
+
+    conn = sqlite3.connect('gas_booking.db')
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+    id,
+    consumer_id,
+    name,
+    mobile,
+    cylinder_type,
+    amount,
+    status
+    FROM bookings
+    """)
+
+    bookings = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        '12_view_bookings.html',
+        bookings=bookings
+    )
+
+
 # ---------------- RUN ----------------
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000, debug=True)
+    app.run(debug=True)
