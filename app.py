@@ -211,9 +211,9 @@ def add_customer():
 
             conn.commit()
 
-        except:
-            conn.close()
-            return "Consumer ID Already Exists"
+        except Exception as e:
+    conn.close()
+    return str(e)
 
         conn.close()
 
