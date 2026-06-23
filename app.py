@@ -6,6 +6,42 @@ app = Flask(__name__)
 app.secret_key = "gas_booking_secret_key"
 
 
+# ---------------- CREATE TABLES (IMPORTANT FOR RENDER) ----------------
+def create_tables():
+    conn = sqlite3.connect('gas_booking.db')
+    cursor = conn.cursor()
+
+    # USERS TABLE
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        consumer_id TEXT UNIQUE,
+        mobile TEXT
+    )
+    """)
+
+    # BOOKINGS TABLE
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS bookings(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        consumer_id TEXT,
+        name TEXT,
+        mobile TEXT,
+        cylinder_type TEXT,
+        amount TEXT,
+        status TEXT
+    )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
+# CALL TABLE CREATION ON STARTUP
+create_tables()
+
+
 # ---------------- HOME ----------------
 @app.route('/')
 def home():
@@ -92,7 +128,7 @@ def verify_otp():
 
             cursor.execute("""
             INSERT INTO bookings
-            (consumer_id,name,mobile,cylinder_type,amount,status)
+            (consumer_id, name, mobile, cylinder_type, amount, status)
             VALUES(?,?,?,?,?,?)
             """,
             (
@@ -138,13 +174,12 @@ def history():
     cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT id,cylinder_type,amount,status
+    SELECT id, cylinder_type, amount, status
     FROM bookings
     WHERE consumer_id=?
     """, (session['consumer_id'],))
 
     bookings = cursor.fetchall()
-
     conn.close()
 
     return render_template('07_history.html', bookings=bookings)
@@ -153,9 +188,7 @@ def history():
 # ---------------- LOGOUT ----------------
 @app.route('/logout')
 def logout():
-
     session.clear()
-
     return redirect('/')
 
 
@@ -204,10 +237,10 @@ def add_customer():
         cursor = conn.cursor()
 
         try:
-            cursor.execute(
-                "INSERT INTO users(name, consumer_id, mobile) VALUES(?,?,?)",
-                (name, consumer_id, mobile)
-            )
+            cursor.execute("""
+                INSERT INTO users(name, consumer_id, mobile)
+                VALUES(?,?,?)
+            """, (name, consumer_id, mobile))
 
             conn.commit()
             conn.close()
@@ -216,11 +249,11 @@ def add_customer():
 
         except Exception as e:
             conn.close()
-            print(e)   # shows error in Render logs
-            return "Something went wrong"
+            print(e)
+            return str(e)   # for debugging
 
     return render_template('10_add_customer.html')
-    
+
 
 # ---------------- VIEW USERS ----------------
 @app.route('/view_users')
@@ -233,7 +266,6 @@ def view_users():
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM users")
-
     users = cursor.fetchall()
 
     conn.close()
@@ -252,25 +284,14 @@ def view_bookings():
     cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT
-    id,
-    consumer_id,
-    name,
-    mobile,
-    cylinder_type,
-    amount,
-    status
+    SELECT id, consumer_id, name, mobile, cylinder_type, amount, status
     FROM bookings
     """)
 
     bookings = cursor.fetchall()
-
     conn.close()
 
-    return render_template(
-        '12_view_bookings.html',
-        bookings=bookings
-    )
+    return render_template('12_view_bookings.html', bookings=bookings)
 
 
 # ---------------- RUN ----------------
