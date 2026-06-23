@@ -52,16 +52,16 @@ def login():
 
     if request.method == 'POST':
 
-        consumer_id = request.form['consumer_id']
-        mobile = request.form['mobile']
+        consumer_id = request.form['consumer_id'].strip()
+        mobile = request.form['mobile'].strip()
 
         conn = sqlite3.connect('gas_booking.db')
         cursor = conn.cursor()
 
-        cursor.execute(
-            "SELECT * FROM users WHERE consumer_id=? AND mobile=?",
-            (consumer_id, mobile)
-        )
+        cursor.execute("""
+            SELECT * FROM users
+            WHERE TRIM(consumer_id)=? AND TRIM(mobile)=?
+        """, (consumer_id, mobile))
 
         user = cursor.fetchone()
         conn.close()
