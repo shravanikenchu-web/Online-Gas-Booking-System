@@ -213,7 +213,8 @@ def add_customer():
 
         except Exception as e:
     conn.close()
-    return str(e)
+    print(e)   # logs error in Render logs
+    return "Something went wrong"
 
         conn.close()
 
