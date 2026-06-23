@@ -205,23 +205,22 @@ def add_customer():
 
         try:
             cursor.execute(
-                "INSERT INTO users(name,consumer_id,mobile) VALUES(?,?,?)",
+                "INSERT INTO users(name, consumer_id, mobile) VALUES(?,?,?)",
                 (name, consumer_id, mobile)
             )
 
             conn.commit()
+            conn.close()
+
+            return redirect('/view_users')
 
         except Exception as e:
-    conn.close()
-    print(e)   # logs error in Render logs
-    return "Something went wrong"
-
-        conn.close()
-
-        return redirect('/view_users')
+            conn.close()
+            print(e)   # shows error in Render logs
+            return "Something went wrong"
 
     return render_template('10_add_customer.html')
-
+    
 
 # ---------------- VIEW USERS ----------------
 @app.route('/view_users')
