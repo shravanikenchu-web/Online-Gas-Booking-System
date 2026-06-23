@@ -11,17 +11,15 @@ def create_tables():
     conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
 
-    # USERS TABLE
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        consumer_id TEXT UNIQUE,
+        consumer_id TEXT,
         mobile TEXT
     )
     """)
 
-    # BOOKINGS TABLE
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS bookings(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
