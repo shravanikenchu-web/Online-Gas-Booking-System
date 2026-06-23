@@ -35,6 +35,7 @@
 
 <nav class="navbar navbar-dark bg-dark">
     <div class="container">
+
         <span class="navbar-brand">
             🔐 Admin Panel
         </span>
@@ -42,6 +43,7 @@
         <a href="/logout" class="btn btn-danger">
             Logout
         </a>
+
     </div>
 </nav>
 
@@ -49,108 +51,100 @@
 
     <div class="header">
         <h1>Admin Dashboard</h1>
-        <p>Manage Users and Gas Cylinder Bookings</p>
+        <p>Manage Customers and Cylinder Bookings</p>
     </div>
 
     <div class="row mt-4">
 
-        <div class="col-md-6 mb-3">
+        <div class="col-md-4 mb-3">
+
             <div class="card shadow">
+
                 <div class="card-body text-center">
 
-                    <h2>📦</h2>
+                    <h2>➕</h2>
 
-                    <h4>View All Bookings</h4>
+                    <h4>Add Customer</h4>
 
                     <p>
-                        Check all cylinder booking records.
+                        Create new customer accounts with Consumer ID and Mobile Number.
                     </p>
 
-                    <a href="/view_bookings"
-                       class="btn btn-primary">
-                        View Bookings
+                    <a href="/add_customer"
+                       class="btn btn-success">
+                        Add Customer
                     </a>
 
                 </div>
+
             </div>
+
         </div>
 
-        <div class="col-md-6 mb-3">
+        <div class="col-md-4 mb-3">
+
             <div class="card shadow">
+
                 <div class="card-body text-center">
 
                     <h2>👥</h2>
 
-                    <h4>View All Users</h4>
+                    <h4>View Customers</h4>
 
                     <p>
-                        Check all registered users.
+                        View all registered customers.
                     </p>
 
                     <a href="/view_users"
-                       class="btn btn-success">
-                        View Users
+                       class="btn btn-primary">
+                        View Customers
                     </a>
 
                 </div>
+
             </div>
+
         </div>
 
-    </div>
+        <div class="col-md-4 mb-3">
 
-    <div class="row">
-
-        <div class="col-md-6 mb-3">
             <div class="card shadow">
+
                 <div class="card-body text-center">
 
-                    <h2>🏠</h2>
+                    <h2>📦</h2>
 
-                    <h4>User Dashboard</h4>
+                    <h4>View Bookings</h4>
 
                     <p>
-                        Switch to user dashboard.
+                        Monitor all LPG cylinder bookings.
                     </p>
 
-                    <a href="/dashboard"
+                    <a href="/view_bookings"
                        class="btn btn-warning">
-                        User Dashboard
+                        View Bookings
                     </a>
 
                 </div>
+
             </div>
-        </div>
 
-        <div class="col-md-6 mb-3">
-            <div class="card shadow">
-                <div class="card-body text-center">
-
-                    <h2>🚪</h2>
-
-                    <h4>Logout</h4>
-
-                    <p>
-                        Exit admin account securely.
-                    </p>
-
-                    <a href="/logout"
-                       class="btn btn-danger">
-                        Logout
-                    </a>
-
-                </div>
-            </div>
         </div>
 
     </div>
 
-    <div class="card shadow mt-3">
+    <div class="card shadow mt-4">
+
         <div class="card-body text-center">
-            <h4>Admin Controls</h4>
+
+            <h4>Admin Responsibilities</h4>
+
             <p>
-                Manage bookings, users and monitor system activities.
+                Add Customers • Manage Consumer IDs • Monitor Bookings • Track Cylinder Requests
             </p>
+
         </div>
+
     </div>
 
 </div>
