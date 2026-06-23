@@ -18,6 +18,8 @@ cursor.execute("""
 CREATE TABLE IF NOT EXISTS bookings(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     consumer_id TEXT,
+    name TEXT,
+    mobile TEXT,
     cylinder_type TEXT,
     amount TEXT,
     status TEXT
