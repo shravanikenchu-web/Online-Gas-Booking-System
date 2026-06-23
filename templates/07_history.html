@@ -28,6 +28,7 @@
 
 <nav class="navbar navbar-dark bg-dark">
     <div class="container">
+
         <span class="navbar-brand">
             ⛽ Online Gas Booking System
         </span>
@@ -35,6 +36,7 @@
         <a href="/dashboard" class="btn btn-light">
             Dashboard
         </a>
+
     </div>
 </nav>
 
@@ -42,7 +44,7 @@
 
     <div class="header">
         <h2>Your Booking History</h2>
-        <p>View all your gas cylinder bookings</p>
+        <p>View all your LPG cylinder bookings</p>
     </div>
 
     <div class="card shadow">
@@ -69,7 +71,6 @@
                             <td>{{ row[0] }}</td>
                             <td>{{ row[1] }}</td>
                             <td>₹{{ row[2] }}</td>
-
                             <td>
                                 <span class="badge bg-success">
                                     {{ row[3] }}
@@ -85,6 +86,7 @@
             </div>
 
             <div class="text-center mt-3">
+
                 <a href="/booking" class="btn btn-primary">
                     New Booking
                 </a>
@@ -92,6 +94,12 @@
                 <a href="/dashboard" class="btn btn-secondary">
                     Dashboard
                 </a>
+
+            </div>
+
+            <div class="alert alert-info mt-3 text-center">
+                All bookings shown here were authenticated using
+                Consumer ID and OTP verification.
             </div>
 
         </div>
