@@ -1,55 +1,61 @@
-# Online Gas Booking System
+Online Gas Booking System
 
-## Project Description
+Project Description
 
-The Online Gas Booking System is a web-based application developed using Flask and SQLite. It allows users to register, log in, book gas cylinders online, view booking history, and manage bookings through an admin dashboard.
+The Online Gas Booking System is a web-based application developed using Flask and SQLite. In this system, the Admin creates customer accounts by providing a Consumer ID and Mobile Number. Customers can log in using their Consumer ID and registered Mobile Number, verify OTP, and book LPG cylinders online. The system also allows customers to view booking history, while the Admin can manage customers and monitor all bookings.
 
-## Technologies Used
+Technologies Used
 
 - Python
 - Flask
-- SQLite
+- SQLite3
 - HTML5
 - CSS3
 - Bootstrap 5
 - Gunicorn
 - Render Deployment
+- GitHub
 
-## Features
+Features
 
-### User Module
+Customer Module
 
-- User Registration
-- User Login
-- User Dashboard
-- Gas Cylinder Booking
+- Customer Login using Consumer ID
+- Mobile Number Verification
+- OTP Verification
+- Customer Dashboard
+- LPG Cylinder Booking
 - Booking History
 - Logout
 
-### Admin Module
+Admin Module
 
 - Admin Login
 - Admin Dashboard
-- View All Users
+- Add Customer
+- View Customers
 - View All Bookings
 
-## Database Tables
+Database Tables
 
-### Users Table
+Users Table
 
-- User ID
-- Name
-- Email
-- Password
+- ID
+- Customer Name
+- Consumer ID
+- Mobile Number
 
-### Bookings Table
+Bookings Table
 
 - Booking ID
+- Consumer ID
+- Customer Name
+- Mobile Number
 - Cylinder Type
 - Amount
 - Status
 
-## Project Structure
+Project Structure
 
 Online-Gas-Booking-System/
 
@@ -65,19 +71,17 @@ Online-Gas-Booking-System/
 
 ├── static/
 
-│ └── style.css
-
 └── templates/
 
 ├── 01_index.html
 
-├── 02_register.html
+├── 02_login.html
 
-├── 03_login.html
+├── 03_dashboard.html
 
-├── 04_dashboard.html
+├── 04_booking.html
 
-├── 05_booking.html
+├── 05_verify_otp.html
 
 ├── 06_payment.html
 
@@ -87,11 +91,13 @@ Online-Gas-Booking-System/
 
 ├── 09_admin_dashboard.html
 
-├── 10_view_bookings.html
+├── 10_add_customer.html
 
-└── 11_view_users.html
+├── 11_view_users.html
 
-## Installation
+└── 12_view_bookings.html
+
+Installation
 
 1. Clone the repository
 
@@ -107,19 +113,19 @@ python app.py
 
 http://127.0.0.1:5000
 
-## Deployment
+Deployment
 
 The project is deployed on Render using Gunicorn.
 
-## Future Enhancements
+Future Enhancements
 
+- Real SMS OTP Integration
 - Online Payment Gateway
-- Email Notifications
 - Cylinder Delivery Tracking
-- User Profile Management
+- Customer Notifications
 - PostgreSQL Database Integration
 
-## Developed By
+Developed By
 
 Shravani Kenchu
 
