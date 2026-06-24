@@ -106,7 +106,7 @@ def booking():
 
         print("OTP =", otp)
 
-        return f"Your OTP is: {otp}"
+        return redirect('/verify_otp')
 
     return render_template('04_booking.html')
 
