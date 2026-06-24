@@ -91,7 +91,6 @@ def dashboard():
 
 
 # ---------------- BOOKING ----------------
-
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
 
@@ -103,21 +102,20 @@ def booking():
         session['cylinder_type'] = request.form['cylinder_type']
         session['amount'] = request.form['amount']
 
-        otp = str(random.randint(1000, 9999))
-        session['otp'] = otp
-
         mobile = session['mobile']
 
-        url = f"https://2factor.in/API/V1/4a73c049-6fec-11f1-8174-0200cd936042/SMS/{mobile}/{otp}"
+        # ✅ SEND SMS OTP USING 2FACTOR
+        url = f"https://2factor.in/API/V1/4a73c049-6fec-11f1-8174-0200cd936042/SMS/{mobile}/AUTOGEN"
 
         response = requests.get(url)
+        data = response.json()
 
-        print(response.text)
+        # store session id
+        session['otp_session_id'] = data['Details']
 
         return redirect('/verify_otp')
 
     return render_template('04_booking.html')
-
 # ---------------- OTP VERIFY ----------------
 @app.route('/verify_otp', methods=['GET', 'POST'])
 def verify_otp():
@@ -125,8 +123,15 @@ def verify_otp():
     if request.method == 'POST':
 
         entered_otp = request.form['otp']
+        session_id = session.get('otp_session_id')
 
-        if entered_otp == session.get('otp'):
+        # VERIFY OTP
+        url = f"https://2factor.in/API/V1/YOUR_API_KEY/SMS/VERIFY/{session_id}/{entered_otp}"
+
+        response = requests.get(url)
+        data = response.json()
+
+        if data['Status'] == "Success":
 
             conn = sqlite3.connect('gas_booking.db')
             cursor = conn.cursor()
@@ -134,7 +139,7 @@ def verify_otp():
             cursor.execute("""
             INSERT INTO bookings
             (consumer_id, name, mobile, cylinder_type, amount, status)
-            VALUES(?,?,?,?,?,?)
+            VALUES (?,?,?,?,?,?)
             """,
             (
                 session['consumer_id'],
