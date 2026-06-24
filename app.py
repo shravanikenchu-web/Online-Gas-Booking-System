@@ -126,7 +126,7 @@ def verify_otp():
         session_id = session.get('otp_session_id')
 
         # VERIFY OTP
-        url = f"https://2factor.in/API/V1/YOUR_API_KEY/SMS/VERIFY/{session_id}/{entered_otp}"
+        url = f"https://2factor.in/API/V1/4a73c049-6fec-11f1-8174-0200cd936042/SMS/VERIFY/{session_id}/{entered_otp}"
 
         response = requests.get(url)
         data = response.json()
