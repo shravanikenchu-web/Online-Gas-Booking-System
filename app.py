@@ -99,21 +99,32 @@ def booking():
 
     if request.method == 'POST':
 
+        # store booking details temporarily
         session['cylinder_type'] = request.form['cylinder_type']
         session['amount'] = request.form['amount']
 
         mobile = session['mobile']
 
-        # ✅ SEND SMS OTP USING 2FACTOR
+        # ✅ 2Factor SMS OTP API (AUTOGEN)
         url = f"https://2factor.in/API/V1/4a73c049-6fec-11f1-8174-0200cd936042/SMS/{mobile}/AUTOGEN"
+
+        print("OTP URL:", url)  # DEBUG (for Render logs)
 
         response = requests.get(url)
         data = response.json()
 
-        # store session id
-        session['otp_session_id'] = data['Details']
+        print("OTP RESPONSE:", data)  # DEBUG (for Render logs)
 
-        return redirect('/verify_otp')
+        # ✅ IMPORTANT: check API success
+        if data.get("Status") == "Success":
+
+            # store session id for verification
+            session['otp_session_id'] = data['Details']
+
+            return redirect('/verify_otp')
+
+        else:
+            return f"OTP Failed: {data}"
 
     return render_template('04_booking.html')
 # ---------------- OTP VERIFY ----------------
