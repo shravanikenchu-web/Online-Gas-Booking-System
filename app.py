@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session
 import sqlite3
 import random
+import requests
 
 app = Flask(__name__)
 app.secret_key = "gas_booking_secret_key"
@@ -102,11 +103,17 @@ def booking():
         session['amount'] = request.form['amount']
 
         otp = str(random.randint(1000, 9999))
-        session['otp'] = otp
+session['otp'] = otp
 
-        print("OTP =", otp)
+mobile = session['mobile']
 
-        return redirect('/verify_otp')
+url =url = f"https://2factor.in/API/V1/4a73c049-6fec-11f1-8174-0200cd936042/SMS/{mobile}/{otp}"
+
+response = requests.get(url)
+
+print(response.text)
+
+return redirect('/verify_otp')
 
     return render_template('04_booking.html')
 
