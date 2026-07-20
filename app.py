@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.secret_key = "gas_booking_secret_key"
 
 # ---------------- API KEY ----------------
-API_KEY = "YOUR_2FACTOR_API_KEY"
+API_KEY = "4a73c049-6fec-11f1-8174-0200cd936042"
 
 # ---------------- CREATE TABLES ----------------
 def create_tables():
