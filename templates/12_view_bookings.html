@@ -67,6 +67,7 @@
                             <th>Cylinder Type</th>
                             <th>Amount</th>
                             <th>Status</th>
+                            <th>Action</th>
                         </tr>
 
                     </thead>
@@ -84,9 +85,52 @@
                             <td>₹{{ row[5] }}</td>
 
                             <td>
-                                <span class="badge bg-success">
-                                    {{ row[6] }}
-                                </span>
+                                {% if row[6] == "Booked" %}
+                                    <span class="badge bg-warning text-dark">Booked</span>
+
+                                {% elif row[6] == "Payment Completed" %}
+                                    <span class="badge bg-success">Payment Completed</span>
+
+                                {% elif row[6] == "Out for Delivery" %}
+                                    <span class="badge bg-info text-dark">Out for Delivery</span>
+
+                                {% elif row[6] == "Delivered" %}
+                                    <span class="badge bg-primary">Delivered</span>
+
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ row[6] }}</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+
+                                {% if row[6] == "Payment Completed" %}
+
+                                    <a href="/send_delivery_otp/{{ row[0] }}"
+                                       class="btn btn-warning btn-sm">
+                                        Send Delivery OTP
+                                    </a>
+
+                                {% elif row[6] == "Out for Delivery" %}
+
+                                    <span class="badge bg-info">
+                                        OTP Sent
+                                    </span>
+
+                                {% elif row[6] == "Delivered" %}
+
+                                    <span class="badge bg-success">
+                                        Delivery Verified
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-secondary">
+                                        Waiting
+                                    </span>
+
+                                {% endif %}
+
                             </td>
 
                         </tr>
