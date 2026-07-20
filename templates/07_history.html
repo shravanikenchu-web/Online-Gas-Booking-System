@@ -44,7 +44,7 @@
 
     <div class="header">
         <h2>Your Booking History</h2>
-        <p>View all your LPG cylinder bookings</p>
+        <p>View all your LPG Cylinder Bookings</p>
     </div>
 
     <div class="card shadow">
@@ -61,6 +61,7 @@
                             <th>Cylinder Type</th>
                             <th>Amount</th>
                             <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
 
@@ -68,14 +69,54 @@
 
                     {% for row in bookings %}
                         <tr>
+
                             <td>{{ row[0] }}</td>
                             <td>{{ row[1] }}</td>
                             <td>₹{{ row[2] }}</td>
+
                             <td>
-                                <span class="badge bg-success">
-                                    {{ row[3] }}
-                                </span>
+                                {% if row[3] == "Booked" %}
+                                    <span class="badge bg-warning text-dark">Booked</span>
+
+                                {% elif row[3] == "Payment Completed" %}
+                                    <span class="badge bg-success">Payment Completed</span>
+
+                                {% elif row[3] == "Out for Delivery" %}
+                                    <span class="badge bg-info text-dark">Out for Delivery</span>
+
+                                {% elif row[3] == "Delivered" %}
+                                    <span class="badge bg-primary">Delivered</span>
+
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ row[3] }}</span>
+                                {% endif %}
                             </td>
+
+                            <td>
+
+                                {% if row[3] == "Out for Delivery" %}
+
+                                    <a href="/delivery_verify/{{ row[0] }}"
+                                       class="btn btn-warning btn-sm">
+                                        Verify Delivery OTP
+                                    </a>
+
+                                {% elif row[3] == "Delivered" %}
+
+                                    <span class="badge bg-success">
+                                        Delivery Verified
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-secondary">
+                                        Waiting
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
                         </tr>
                     {% endfor %}
 
@@ -98,9 +139,9 @@
             </div>
 
             <div class="alert alert-info mt-3 text-center">
-    Booking Status:
-    Booked → Payment Completed → Out for Delivery → Delivered.<br>
-    Delivery is completed only after Delivery OTP verification.
+                Booking Status:
+                Booked → Payment Completed → Out for Delivery → Delivered.<br>
+                Delivery is completed only after Delivery OTP verification.
             </div>
 
         </div>
