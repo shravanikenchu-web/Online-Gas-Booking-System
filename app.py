@@ -1,13 +1,14 @@
 from flask import Flask, render_template, request, redirect, session
 import sqlite3
-import random
 import requests
 
 app = Flask(__name__)
 app.secret_key = "gas_booking_secret_key"
 
+# ---------------- API KEY ----------------
+API_KEY = "YOUR_2FACTOR_API_KEY"
 
-# ---------------- CREATE TABLES (IMPORTANT FOR RENDER) ----------------
+# ---------------- CREATE TABLES ----------------
 def create_tables():
     conn = sqlite3.connect('gas_booking.db')
     cursor = conn.cursor()
@@ -29,23 +30,21 @@ def create_tables():
         mobile TEXT,
         cylinder_type TEXT,
         amount TEXT,
-        status TEXT
+        status TEXT,
+        delivery_session_id TEXT,
+        delivery_verified INTEGER DEFAULT 0
     )
     """)
 
     conn.commit()
     conn.close()
 
-
-# CALL TABLE CREATION ON STARTUP
 create_tables()
-
 
 # ---------------- HOME ----------------
 @app.route('/')
 def home():
     return render_template('01_index.html')
-
 
 # ---------------- CUSTOMER LOGIN ----------------
 @app.route('/login', methods=['GET', 'POST'])
@@ -60,8 +59,8 @@ def login():
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT * FROM users
-            WHERE TRIM(consumer_id)=? AND TRIM(mobile)=?
+        SELECT * FROM users
+        WHERE TRIM(consumer_id)=? AND TRIM(mobile)=?
         """, (consumer_id, mobile))
 
         user = cursor.fetchone()
@@ -79,7 +78,6 @@ def login():
 
     return render_template('02_login.html')
 
-
 # ---------------- DASHBOARD ----------------
 @app.route('/dashboard')
 def dashboard():
@@ -89,8 +87,7 @@ def dashboard():
 
     return render_template('03_dashboard.html')
 
-
-# ---------------- BOOKING ----------------
+# ---------------- BOOK CYLINDER ----------------
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
 
@@ -99,35 +96,24 @@ def booking():
 
     if request.method == 'POST':
 
-        # store booking details temporarily
         session['cylinder_type'] = request.form['cylinder_type']
         session['amount'] = request.form['amount']
 
         mobile = session['mobile']
 
-        # ✅ 2Factor SMS OTP API (AUTOGEN)
-        url = f"https://2factor.in/API/V1/4a73c049-6fec-11f1-8174-0200cd936042/SMS/{mobile}/AUTOGEN"
-
-        print("OTP URL:", url)  # DEBUG (for Render logs)
+        url = f"https://2factor.in/API/V1/{API_KEY}/SMS/{mobile}/AUTOGEN"
 
         response = requests.get(url)
         data = response.json()
 
-        print("OTP RESPONSE:", data)  # DEBUG (for Render logs)
-
-        # ✅ IMPORTANT: check API success
         if data.get("Status") == "Success":
-
-            # store session id for verification
             session['otp_session_id'] = data['Details']
-
             return redirect('/verify_otp')
 
-        else:
-            return f"OTP Failed: {data}"
+        return f"OTP Failed : {data}"
 
     return render_template('04_booking.html')
-# ---------------- OTP VERIFY ----------------
+    # ---------------- BOOKING OTP VERIFY ----------------
 @app.route('/verify_otp', methods=['GET', 'POST'])
 def verify_otp():
 
@@ -136,21 +122,21 @@ def verify_otp():
         entered_otp = request.form['otp']
         session_id = session.get('otp_session_id')
 
-        # VERIFY OTP
-        url = f"https://2factor.in/API/V1/4a73c049-6fec-11f1-8174-0200cd936042/SMS/VERIFY/{session_id}/{entered_otp}"
+        url = f"https://2factor.in/API/V1/{API_KEY}/SMS/VERIFY/{session_id}/{entered_otp}"
 
         response = requests.get(url)
         data = response.json()
 
-        if data['Status'] == "Success":
+        if data.get("Status") == "Success":
 
             conn = sqlite3.connect('gas_booking.db')
             cursor = conn.cursor()
 
             cursor.execute("""
             INSERT INTO bookings
-            (consumer_id, name, mobile, cylinder_type, amount, status)
-            VALUES (?,?,?,?,?,?)
+            (consumer_id, name, mobile, cylinder_type, amount, status,
+             delivery_session_id, delivery_verified)
+            VALUES (?,?,?,?,?,?,?,?)
             """,
             (
                 session['consumer_id'],
@@ -158,8 +144,12 @@ def verify_otp():
                 session['mobile'],
                 session['cylinder_type'],
                 session['amount'],
-                "Booked"
+                "Booked",
+                "",
+                0
             ))
+
+            session['booking_id'] = cursor.lastrowid
 
             conn.commit()
             conn.close()
@@ -179,6 +169,19 @@ def payment():
         return redirect('/login')
 
     if request.method == 'POST':
+
+        conn = sqlite3.connect('gas_booking.db')
+        cursor = conn.cursor()
+
+        cursor.execute("""
+        UPDATE bookings
+        SET status=?
+        WHERE id=?
+        """, ("Payment Completed", session['booking_id']))
+
+        conn.commit()
+        conn.close()
+
         return redirect('/history')
 
     return render_template('06_payment.html')
@@ -195,18 +198,21 @@ def history():
     cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT id, cylinder_type, amount, status
+    SELECT id,
+           cylinder_type,
+           amount,
+           status,
+           delivery_verified
     FROM bookings
     WHERE consumer_id=?
     """, (session['consumer_id'],))
 
     bookings = cursor.fetchall()
+
     conn.close()
 
     return render_template('07_history.html', bookings=bookings)
-
-
-# ---------------- LOGOUT ----------------
+    # ---------------- LOGOUT ----------------
 @app.route('/logout')
 def logout():
     session.clear()
@@ -257,21 +263,15 @@ def add_customer():
         conn = sqlite3.connect('gas_booking.db')
         cursor = conn.cursor()
 
-        try:
-            cursor.execute("""
-                INSERT INTO users(name, consumer_id, mobile)
-                VALUES(?,?,?)
-            """, (name, consumer_id, mobile))
+        cursor.execute("""
+        INSERT INTO users(name, consumer_id, mobile)
+        VALUES(?,?,?)
+        """, (name, consumer_id, mobile))
 
-            conn.commit()
-            conn.close()
+        conn.commit()
+        conn.close()
 
-            return redirect('/view_users')
-
-        except Exception as e:
-            conn.close()
-            print(e)
-            return str(e)   # for debugging
+        return redirect('/view_users')
 
     return render_template('10_add_customer.html')
 
@@ -305,7 +305,13 @@ def view_bookings():
     cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT id, consumer_id, name, mobile, cylinder_type, amount, status
+    SELECT id,
+           consumer_id,
+           name,
+           mobile,
+           cylinder_type,
+           amount,
+           status
     FROM bookings
     """)
 
@@ -313,6 +319,109 @@ def view_bookings():
     conn.close()
 
     return render_template('12_view_bookings.html', bookings=bookings)
+
+
+# ---------------- SEND DELIVERY OTP ----------------
+@app.route('/send_delivery_otp/<int:booking_id>')
+def send_delivery_otp(booking_id):
+
+    if 'admin' not in session:
+        return redirect('/admin')
+
+    conn = sqlite3.connect('gas_booking.db')
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT mobile
+    FROM bookings
+    WHERE id=?
+    """, (booking_id,))
+
+    booking = cursor.fetchone()
+
+    if booking:
+
+        mobile = booking[0]
+
+        url = f"https://2factor.in/API/V1/{API_KEY}/SMS/{mobile}/AUTOGEN"
+
+        response = requests.get(url)
+        data = response.json()
+
+        if data.get("Status") == "Success":
+
+            cursor.execute("""
+            UPDATE bookings
+            SET delivery_session_id=?,
+                status=?
+            WHERE id=?
+            """,
+            (
+                data["Details"],
+                "Out for Delivery",
+                booking_id
+            ))
+
+            conn.commit()
+
+    conn.close()
+
+    return redirect('/view_bookings')
+    # ---------------- DELIVERY OTP VERIFICATION ----------------
+@app.route('/delivery_verify/<int:booking_id>', methods=['GET', 'POST'])
+def delivery_verify(booking_id):
+
+    if 'consumer_id' not in session:
+        return redirect('/login')
+
+    conn = sqlite3.connect('gas_booking.db')
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT delivery_session_id
+    FROM bookings
+    WHERE id=?
+    """, (booking_id,))
+
+    booking = cursor.fetchone()
+
+    if booking is None:
+        conn.close()
+        return "Booking not found"
+
+    session_id = booking[0]
+
+    if request.method == 'POST':
+
+        entered_otp = request.form['otp']
+
+        url = f"https://2factor.in/API/V1/{API_KEY}/SMS/VERIFY/{session_id}/{entered_otp}"
+
+        response = requests.get(url)
+        data = response.json()
+
+        if data.get("Status") == "Success":
+
+            cursor.execute("""
+            UPDATE bookings
+            SET status=?,
+                delivery_verified=1
+            WHERE id=?
+            """, ("Delivered", booking_id))
+
+            conn.commit()
+            conn.close()
+
+            return redirect('/history')
+
+        conn.close()
+        return "Invalid Delivery OTP"
+
+    conn.close()
+    return render_template(
+        '13_delivery_verify.html',
+        booking_id=booking_id
+    )
 
 
 # ---------------- RUN ----------------
